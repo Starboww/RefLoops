@@ -222,14 +222,14 @@ export class EmailPatternService {
       }
     };
 
-    // Tier 1 — PRD §9.3
+    // Tier 1 — Primary high-probability corporate patterns
     add(`${first}.${last}`, 1, 'first.last');
+    add(first, 1, 'first');
     add(`${f}${last}`, 1, 'flast');
     add(`${first}${l}`, 1, 'firstl');
 
     // Tier 2
     add(`${first}${last}`, 2, 'firstlast');
-    add(first, 2, 'first');
     add(`${f}.${last}`, 2, 'f.last');
     add(`${first}.${l}`, 2, 'first.l');
 

@@ -129,30 +129,32 @@ async function handleMessage(
       }
 
       case 'EXPORT_DATA': {
-        const [jobs, contacts, settings, user] = await Promise.all([
-          repos.jobs.getAll(),
-          repos.contacts.getAll(),
-          repos.settings.get(),
-          repos.userAccount.get(),
-        ]);
-        const exportData = {
-          version: 1,
-          exportedAt: new Date().toISOString(),
-          user,
-          jobs,
-          contacts,
-          settings,
-        };
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: 'application/json',
-        });
-        const url = URL.createObjectURL(blob);
-        await chrome.downloads.download({
-          url,
-          filename: `refloop-backup-${new Date().toISOString().split('T')[0]}.json`,
-          saveAs: false,
-        });
-        sendResponse({ success: true });
+        try {
+          const [jobs, contacts, settings, user] = await Promise.all([
+            repos.jobs.getAll(),
+            repos.contacts.getAll(),
+            repos.settings.get(),
+            repos.userAccount.get(),
+          ]);
+          const exportData = {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            user,
+            jobs,
+            contacts,
+            settings,
+          };
+          const jsonString = JSON.stringify(exportData, null, 2);
+          const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(jsonString)}`;
+          await chrome.downloads.download({
+            url: dataUrl,
+            filename: `refloop-backup-${new Date().toISOString().split('T')[0]}.json`,
+            saveAs: false,
+          });
+          sendResponse({ success: true, data: exportData });
+        } catch (err) {
+          sendResponse({ success: false, error: String(err) });
+        }
         break;
       }
 

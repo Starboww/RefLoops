@@ -7,10 +7,18 @@ describe('EmailPatternService.generateCandidates', () => {
   it('generates correct tier-1 candidates for John Doe @ microsoft.com', () => {
     const results = svc.generateCandidates({ first: 'John', last: 'Doe' }, 'microsoft.com');
     const emails = results.map((r) => r.email);
-    // PRD §9.3 tier 1
+    // Tier 1 includes first.last, first, flast, firstl
     expect(emails).toContain('john.doe@microsoft.com');
+    expect(emails).toContain('john@microsoft.com');
     expect(emails).toContain('jdoe@microsoft.com');
     expect(emails).toContain('johnd@microsoft.com');
+  });
+
+  it('generates suraj@mojro.com in Tier 1 for Suraj Soni @ mojro.com', () => {
+    const results = svc.generateCandidates({ first: 'Suraj', last: 'Soni' }, 'mojro.com');
+    const tier1 = results.filter((r) => r.tier === 1).map((r) => r.email);
+    expect(tier1).toContain('suraj@mojro.com');
+    expect(tier1).toContain('suraj.soni@mojro.com');
   });
 
   it('tier-1 candidates appear before tier-2 and tier-3', () => {

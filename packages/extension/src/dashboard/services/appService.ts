@@ -8,6 +8,7 @@ import type {
   JobPosting,
   Contact,
   GlobalSettings,
+  UserAccount,
   NewJobInput,
   NewLinkedInContactInput,
   NewEmailContactInput,
@@ -185,32 +186,100 @@ export async function signOut(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function exportData(): Promise<void> {
-  await chrome.runtime.sendMessage({ type: 'EXPORT_DATA' });
+  const repos = await createChromeRepositories();
+  const [jobs, contacts, settings, user] = await Promise.all([
+    repos.jobs.getAll(),
+    repos.contacts.getAll(),
+    repos.settings.get(),
+    repos.userAccount.get(),
+  ]);
+
+  const backupData = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    user,
+    jobs,
+    contacts,
+    settings,
+  };
+
+  const jsonString = JSON.stringify(backupData, null, 2);
+  const filename = `refloop-backup-${new Date().toISOString().split('T')[0]}.json`;
+
+  // 1. Try chrome.downloads API via background worker
+  try {
+    const res = (await chrome.runtime.sendMessage({ type: 'EXPORT_DATA' })) as
+      | { success?: boolean; error?: string }
+      | undefined;
+    if (res?.success) {
+      return;
+    }
+  } catch {
+    // Fall back to client DOM blob download if background messaging fails
+  }
+
+  // 2. Client-side fallback via DOM Blob link
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 export async function importData(file: File): Promise<void> {
   const text = await file.text();
-  const data = JSON.parse(text) as {
+  let data: {
+    version?: number;
     jobs?: JobPosting[];
     contacts?: Contact[];
     settings?: GlobalSettings;
+    user?: UserAccount | null;
   };
 
-  const repos = await createChromeRepositories();
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error('Invalid JSON file format.');
+  }
 
-  if (data.jobs) {
-    const { storageSet } = await import('@refloop/storage-chrome');
+  if (!data || typeof data !== 'object') {
+    throw new Error('Invalid backup data format.');
+  }
+
+  const hasJobs = Array.isArray(data.jobs);
+  const hasContacts = Array.isArray(data.contacts);
+  const hasSettings = data.settings && typeof data.settings === 'object';
+  const hasUser = data.user && typeof data.user === 'object';
+
+  if (!hasJobs && !hasContacts && !hasSettings && !hasUser) {
+    throw new Error('Backup file does not contain valid RefLoop data.');
+  }
+
+  const repos = await createChromeRepositories();
+  const { storageSet } = await import('@refloop/storage-chrome');
+
+  if (hasJobs) {
     await storageSet('jobs:v1', data.jobs);
   }
 
-  if (data.contacts) {
-    const { storageSet } = await import('@refloop/storage-chrome');
+  if (hasContacts) {
     await storageSet('contacts:v1', data.contacts);
   }
 
-  if (data.settings) {
-    await repos.settings.update(data.settings);
+  if (hasSettings) {
+    await repos.settings.update(data.settings!);
   }
+
+  if (hasUser) {
+    await repos.userAccount.set(data.user!);
+  }
+
+  // Re-initialize dashboard store state so UI reflects imported data immediately
+  await initDashboard();
 }
 
 // ---------------------------------------------------------------------------

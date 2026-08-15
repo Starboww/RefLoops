@@ -44,7 +44,14 @@ export { isExtensionMessage } from './messages/messages.js';
 
 // Services
 export { SchedulingService } from './services/SchedulingService.js';
-export { MessageAssemblyService } from './services/MessageAssemblyService.js';
+export {
+  MessageAssemblyService,
+  substituteTemplateVariables,
+  detectTemplateVariables,
+  validateMessageTemplate,
+  type DetectedVariable,
+  type TemplateValidationResult,
+} from './services/MessageAssemblyService.js';
 export {
   HousekeepingService,
   type HousekeepingResult,

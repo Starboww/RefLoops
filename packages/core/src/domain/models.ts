@@ -107,6 +107,11 @@ export interface GlobalSettings {
   dailySendCap: number;
   interMessageDelaySeconds: [number, number];
 
+  // User profile & template variables
+  myCurrentTitle?: string | undefined;
+  yearsOfExperience?: string | undefined;
+  customVariables?: Record<string, string> | undefined;
+
   // Pro Mode — Gmail acceptance detection
   proModeEnabled: boolean;
   gmailSyncEnabled: boolean;
@@ -123,11 +128,16 @@ export const DEFAULT_SETTINGS: GlobalSettings = {
   activeDays: [1, 2, 3, 4, 5],
   greetingFormat: 'Hi {{firstName}},',
   followUp1Template:
-    "Hi {{firstName}},\n\nJust wanted to follow up on my previous message. I'm very excited about the opportunity at your company and would love to learn more about your experience there. Would you be open to a quick chat?\n\nThanks so much!",
+    "Just wanted to follow up on my previous message. I'm very excited about the opportunity for {{jobTitle}} at {{companyName}} and would love to learn more about your experience there. Would you be open to a quick chat?\n\nThanks so much!",
   followUp2Template:
-    "Hi {{firstName}},\n\nI hope I'm not being too persistent — I know you're busy! This is my last follow-up. If the timing isn't right, no worries at all. I'd still love to connect whenever it works for you.\n\nThanks for your time!",
+    "I hope I'm not being too persistent — I know you're busy! This is my last follow-up regarding the {{jobTitle}} role at {{companyName}}. If the timing isn't right, no worries at all. I'd still love to connect whenever it works for you.\n\nThanks for your time!",
   dailySendCap: 15,
   interMessageDelaySeconds: [30, 180],
+
+  // User profile & template variables
+  myCurrentTitle: '',
+  yearsOfExperience: '',
+  customVariables: {},
 
   // Pro Mode — Gmail acceptance detection
   proModeEnabled: false,
