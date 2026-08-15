@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@refloop/core": ["../core/src/index.ts"],
+      "@refloop/storage-chrome": ["../storage-chrome/src/index.ts"],
+      "@refloop/ui": ["../ui/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../core" },
+    { "path": "../storage-chrome" },
+    { "path": "../ui" }
+  ],
+  "include": ["src/**/*", "manifest.config.ts", "vite.config.ts"]
+}

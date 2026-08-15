@@ -1,0 +1,89 @@
+/* =============================================================================
+   RefLoop — Claude AI Design Tokens
+   Warm, elegant, humanistic color palette inspired by Claude (Anthropic).
+   ============================================================================= */
+
+:root {
+  /* Background layers */
+  --color-bg: #FAF8F5;                     /* Claude warm off-white canvas */
+  --color-surface: #FFFFFF;                 /* Pure white card surface */
+  --color-surface-raised: #FFFFFF;          /* Elevated surface */
+  --color-surface-hover: #F4F0EA;           /* Warm subtle hover */
+
+  /* Borders */
+  --color-border: #E8E3DA;                  /* Soft warm stone border */
+  --color-border-subtle: #F2EEE7;
+
+  /* Text */
+  --color-text: #1C1917;                     /* Rich warm charcoal */
+  --color-text-muted: #78716C;               /* Warm stone muted */
+  --color-text-placeholder: #A8A29E;
+
+  /* Accent — Claude Terracotta / Warm Amber */
+  --color-accent: #D97757;
+  --color-accent-hover: #C86545;
+  --color-accent-fg: #FFFFFF;
+  --color-accent-subtle: #FDF4F0;
+  --color-accent-border: #F7D5C8;
+
+  /* Status colors */
+  --color-success: #059669;
+  --color-success-bg: #ECFDF5;
+  --color-success-border: #A7F3D0;
+
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+
+  --color-danger: #DC2626;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+
+  --color-info: #2563EB;
+  --color-info-bg: #EFF6FF;
+  --color-info-border: #BFDBFE;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.06);
+  --shadow-lg: 0 12px 32px rgba(28, 25, 23, 0.08);
+}
+
+/* Dark mode — Claude Dark Theme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #18181B;                    /* Deep warm charcoal */
+    --color-surface: #27272A;                /* Warm dark surface */
+    --color-surface-raised: #3F3F46;
+    --color-surface-hover: #3F3F46;
+
+    --color-border: #3F3F46;
+    --color-border-subtle: #27272A;
+
+    --color-text: #F5F5F4;
+    --color-text-muted: #A8A29E;
+    --color-text-placeholder: #78716C;
+
+    --color-accent: #E06D53;
+    --color-accent-hover: #EE7A60;
+    --color-accent-fg: #18181B;
+    --color-accent-subtle: #3A221C;
+    --color-accent-border: #5A3228;
+
+    --color-success: #10B981;
+    --color-success-bg: #064E3B;
+    --color-success-border: #047857;
+
+    --color-warning: #F59E0B;
+    --color-warning-bg: #78350F;
+    --color-warning-border: #B45309;
+
+    --color-danger: #EF4444;
+    --color-danger-bg: #7F1D1D;
+    --color-danger-border: #B91C1C;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  }
+}

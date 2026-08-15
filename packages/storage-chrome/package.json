@@ -1,0 +1,20 @@
+{
+  "name": "@refloop/storage-chrome",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Chrome storage adapters implementing core repository interfaces",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@refloop/core": "workspace:*",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270"
+  }
+}
