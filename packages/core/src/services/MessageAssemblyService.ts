@@ -153,7 +153,7 @@ export function detectTemplateVariables(
 
 export interface TemplateValidationResult {
   hasDuplicateGreeting: boolean;
-  duplicateGreetingSnippet?: string;
+  duplicateGreetingSnippet?: string | undefined;
   hasMissingName: boolean;
   unfilledVariables: DetectedVariable[];
   allVariables: DetectedVariable[];

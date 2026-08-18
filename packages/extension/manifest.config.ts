@@ -37,6 +37,7 @@ export default defineManifest({
     'tabs',         // open LinkedIn profile tab on Send
     'activeTab',    // read current tab URL in popup
     'clipboardWrite', // Email clipboard fallback (PRD §11.1)
+    'webNavigation', // Official Chrome SPA history.pushState & navigation listener
   ],
 
   // ---------------------------------------------------------------------------

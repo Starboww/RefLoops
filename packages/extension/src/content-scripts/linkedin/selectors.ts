@@ -52,14 +52,150 @@ export const COMPOSER_SEND_BUTTON_SELECTORS = [
 
 /**
  * Profile name heading on a LinkedIn profile page (/in/*).
- * Anchor: h1 in the profile top card — structural position is stable.
+ * LinkedIn frequently alternates between h1 and h2 tags with obfuscated classes
+ * across different redesigns and A/B tests.
  */
 export const PROFILE_NAME_SELECTORS = [
-  'h1.inline.t-24.v-align-middle.break-words',
+  'main section:first-of-type h2',
+  'main section:first-of-type h1',
+  'section.pv-top-card h2',
+  'section.pv-top-card h1',
+  '.pv-top-card h2',
+  '.pv-top-card h1',
+  '.pv-text-details__left-panel h2',
   '.pv-text-details__left-panel h1',
+  'h2.inline.t-24.v-align-middle.break-words',
+  'h1.inline.t-24.v-align-middle.break-words',
+  'h2.inline.t-24',
+  'h1.inline.t-24',
+  '.artdeco-card h2',
   '.artdeco-card h1',
+  'main h2:first-of-type',
   'main h1:first-of-type',
 ];
+
+const NON_PERSON_HEADINGS = new Set([
+  'about',
+  'experience',
+  'education',
+  'skills',
+  'activity',
+  'interests',
+  'featured',
+  'languages',
+  'analytics',
+  'resources',
+  'licenses & certifications',
+  'projects',
+  'volunteering',
+  'recommendations',
+  'courses',
+  'honors & awards',
+  'organizations',
+  'causes',
+  'more profiles for you',
+  'people also viewed',
+  'people you may know',
+  'people also follow',
+  'pages people also follow',
+  'people also search for',
+  'similar pages',
+  'affiliated company',
+  'affiliated companies',
+  'suggested',
+  'messaging',
+  'notifications',
+  'feed',
+  'jobs',
+  'mynetwork',
+]);
+
+/**
+ * Strips pronouns, badges, degrees, and extra punctuation from raw scraped names.
+ */
+export function cleanScrapedName(rawName: string): string {
+  if (!rawName) return '';
+  return rawName
+    .replace(/\((?:He\/Him|She\/Her|They\/Them|He\/They|She\/They|Ze\/Zir|Any pronouns)[^)]*\)/gi, '')
+    .replace(/\b(?:He\/Him|She\/Her|They\/Them)\b/gi, '')
+    .replace(/·\s*\d+(st|nd|rd|th)?/gi, '')
+    .replace(/\b\d+(st|nd|rd|th)\b/gi, '')
+    .replace(/[\r\n\t]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9.\s]+$/g, '')
+    .trim();
+}
+
+/**
+ * Checks if a string looks like a valid person's name (not a section header).
+ */
+export function isValidPersonName(name: string): boolean {
+  if (!name || name.length < 2) return false;
+  const lower = name.toLowerCase().trim();
+  if (NON_PERSON_HEADINGS.has(lower)) return false;
+  if (
+    lower.startsWith('more profiles') ||
+    lower.startsWith('people also') ||
+    lower.startsWith('people you may') ||
+    lower.startsWith('pages people') ||
+    lower.startsWith('similar pages') ||
+    lower.startsWith('view profile') ||
+    lower.startsWith('show all')
+  ) {
+    return false;
+  }
+  // Must contain at least one letter
+  return /[a-zA-Z]/.test(name);
+}
+
+/**
+ * Extract full name and first name from a LinkedIn profile page with multiple fallbacks.
+ */
+export function extractLinkedInProfileName(): { fullName: string; firstName: string } {
+  // Strategy 1: Test targeted selectors
+  for (const selector of PROFILE_NAME_SELECTORS) {
+    try {
+      const el = document.querySelector(selector);
+      if (el) {
+        const cleaned = cleanScrapedName(el.textContent || '');
+        if (isValidPersonName(cleaned)) {
+          const firstName = cleaned.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') || 'Contact';
+          return { fullName: cleaned, firstName };
+        }
+      }
+    } catch {
+      // skip invalid selector
+    }
+  }
+
+  // Strategy 2: Search top-card container headings
+  const topCard = document.querySelector('main section:first-of-type, .pv-top-card, main .artdeco-card:first-of-type');
+  if (topCard) {
+    const headings = topCard.querySelectorAll('h1, h2, h3');
+    for (const h of headings) {
+      const cleaned = cleanScrapedName(h.textContent || '');
+      if (isValidPersonName(cleaned)) {
+        const firstName = cleaned.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') || 'Contact';
+        return { fullName: cleaned, firstName };
+      }
+    }
+  }
+
+  // Strategy 3: Tab title fallback (e.g., "(2) Subhadeep Dan | LinkedIn" -> "Subhadeep Dan")
+  if (typeof document !== 'undefined' && document.title) {
+    const titleClean = document.title.replace(/^\(\d+\)\s*/, '').trim();
+    const parts = titleClean.split(/\s*[\–\—\|\-]\s*/);
+    if (parts.length > 0 && parts[0]) {
+      const candidate = cleanScrapedName(parts[0]);
+      if (isValidPersonName(candidate) && !candidate.toLowerCase().includes('linkedin')) {
+        const firstName = candidate.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') || 'Contact';
+        return { fullName: candidate, firstName };
+      }
+    }
+  }
+
+  return { fullName: 'Contact', firstName: 'Contact' };
+}
 
 /**
  * Easy Apply button on a LinkedIn job posting page.

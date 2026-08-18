@@ -464,24 +464,39 @@ async function handleSubmit(panel: HTMLElement): Promise<void> {
   try {
     const isEasyApply = !!document.querySelector('button[aria-label*="Easy Apply" i]');
 
-    await new Promise<void>((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        {
-          type: 'ADD_JOB_REQUEST',
-          payload: {
-            companyName,
-            jobTitle,
-            jobLink,
-            sourceType: isEasyApply ? 'EASY_APPLY' : 'COMPANY_SITE',
-          },
-        },
-        (res: { success?: boolean; error?: string } | undefined) => {
-          if (chrome.runtime.lastError) return reject(chrome.runtime.lastError);
-          if (res?.success) resolve();
-          else reject(new Error(res?.error ?? 'Unknown error'));
-        },
-      );
-    });
+    // Send message to background with automatic retry if worker is in the process of waking up
+    const sendAddJobMessage = async (retries = 1): Promise<void> => {
+      try {
+        await new Promise<void>((resolve, reject) => {
+          chrome.runtime.sendMessage(
+            {
+              type: 'ADD_JOB_REQUEST',
+              payload: {
+                companyName,
+                jobTitle,
+                jobLink,
+                sourceType: isEasyApply ? 'EASY_APPLY' : 'COMPANY_SITE',
+              },
+            },
+            (res: { success?: boolean; error?: string } | undefined) => {
+              if (chrome.runtime.lastError) {
+                return reject(new Error(chrome.runtime.lastError.message ?? 'Extension runtime error'));
+              }
+              if (res?.success) resolve();
+              else reject(new Error(res?.error ?? 'Unknown error'));
+            },
+          );
+        });
+      } catch (err) {
+        if (retries > 0) {
+          await new Promise((r) => setTimeout(r, 200));
+          return sendAddJobMessage(retries - 1);
+        }
+        throw err;
+      }
+    };
+
+    await sendAddJobMessage(1);
 
     // Replace form with success
     const formEl = panel.querySelector('#refloop-panel-form') as HTMLElement | null;
@@ -492,9 +507,10 @@ async function handleSubmit(panel: HTMLElement): Promise<void> {
 
   } catch (err) {
     console.error('[RefLoop] Widget submit error:', err);
+    const message = err instanceof Error ? err.message : String(err);
     if (errorDiv) {
       errorDiv.style.display = 'block';
-      errorDiv.textContent = `Error: ${String(err)}`;
+      errorDiv.textContent = message.startsWith('Error:') ? message : `Error: ${message}`;
     }
     if (submitBtn) {
       submitBtn.style.opacity = '1';

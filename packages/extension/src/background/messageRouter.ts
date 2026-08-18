@@ -3,7 +3,7 @@
 // Technical Design §3.5: single switch exhaustively routing all typed messages.
 // =============================================================================
 
-import type { ChromeRepositories } from '@refloop/storage-chrome';
+import { createChromeRepositories, type ChromeRepositories } from '@refloop/storage-chrome';
 import type { ExtensionMessage } from '@refloop/core';
 import { isExtensionMessage } from '@refloop/core';
 import { signIn, signOut } from '../auth/googleAuth.js';
@@ -12,11 +12,20 @@ import { executeSend } from './sendActionRunner.js';
 import { runHousekeeping } from './housekeepingRunner.js';
 import { syncLinkedInAcceptances } from './gmailSyncRunner.js';
 
-export function messageRouter(repos: ChromeRepositories): void {
+export function messageRouter(): void {
   chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
     if (!isExtensionMessage(message)) return false;
 
-    handleMessage(message, repos, sendResponse);
+    void (async () => {
+      try {
+        const repos = await createChromeRepositories();
+        await handleMessage(message, repos, sendResponse);
+      } catch (err) {
+        console.error('[RefLoop] Message handler error:', err);
+        sendResponse({ success: false, error: err instanceof Error ? err.message : String(err) });
+      }
+    })();
+
     return true;
   });
 }

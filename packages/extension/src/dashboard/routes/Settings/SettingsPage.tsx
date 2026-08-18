@@ -23,7 +23,6 @@ import {
   Plus,
   Trash2,
   AlertTriangle,
-  UserCheck,
   Edit3,
 } from 'lucide-react';
 import { Button, Input, Textarea, FormField, Card } from '@refloop/ui';
@@ -37,7 +36,13 @@ import {
   getGmailSyncState,
 } from '../../services/appService';
 import { GmailOnboardingModal } from './GmailOnboardingModal';
-import { MessageAssemblyService, validateMessageTemplate, type GlobalSettings, type Stage } from '@refloop/core';
+import {
+  MessageAssemblyService,
+  validateMessageTemplate,
+  type DetectedVariable,
+  type GlobalSettings,
+  type Stage,
+} from '@refloop/core';
 import type { GmailSyncState } from '@refloop/storage-chrome';
 
 export function SettingsPage() {
@@ -1057,7 +1062,7 @@ export function SettingsPage() {
                     Click a variable below to set its value:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {validationResult.unfilledVariables.map((uv) => (
+                    {validationResult.unfilledVariables.map((uv: DetectedVariable) => (
                       <button
                         key={uv.name}
                         type="button"

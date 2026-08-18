@@ -24,6 +24,10 @@ export function initAddToTracker() {
   let retries = 0;
   const timer = setInterval(() => {
     retries++;
+    if (!chrome.runtime?.id) {
+      clearInterval(timer);
+      return;
+    }
     const injected = injectButton();
     if (injected || retries >= 5) {
       clearInterval(timer);

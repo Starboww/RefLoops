@@ -53,6 +53,7 @@ import {
 import {
   MessageAssemblyService,
   validateMessageTemplate,
+  type DetectedVariable,
   type JobPosting,
   type Stage,
   type GlobalSettings,
@@ -916,7 +917,7 @@ export function JobDetailPage() {
                     Click a variable below to set its value:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
-                    {validationResult.unfilledVariables.map((uv) => (
+                    {validationResult.unfilledVariables.map((uv: DetectedVariable) => (
                       <button
                         key={uv.name}
                         type="button"

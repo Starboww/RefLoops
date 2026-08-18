@@ -11,6 +11,21 @@ const HOUSEKEEPING_PERIOD_MINUTES = 5;
 
 const GMAIL_SYNC_ALARM = 'refloop:gmail-sync';
 
+// ---- Alarm listeners ----
+// Registered at top level synchronously so MV3 service worker can catch alarms immediately
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === HOUSEKEEPING_ALARM) {
+    chrome.runtime.sendMessage({ type: 'HOUSEKEEPING_RUN' }).catch(() => {
+      // Dashboard might not be open — that's fine
+    });
+    void import('./housekeepingRunner.js').then((m) => m.runHousekeeping());
+  }
+
+  if (alarm.name === GMAIL_SYNC_ALARM) {
+    void import('./gmailSyncRunner.js').then((m) => m.syncLinkedInAcceptances());
+  }
+});
+
 export async function setupAlarms(): Promise<void> {
   const repos = await createChromeRepositories();
   const settings = await repos.settings.get();
@@ -31,19 +46,5 @@ export async function setupAlarms(): Promise<void> {
       periodInMinutes: periodMinutes,
     });
   }
-
-  // ---- Alarm listeners ----
-  chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === HOUSEKEEPING_ALARM) {
-      chrome.runtime.sendMessage({ type: 'HOUSEKEEPING_RUN' }).catch(() => {
-        // Dashboard might not be open — that's fine
-      });
-      void import('./housekeepingRunner.js').then((m) => m.runHousekeeping());
-    }
-
-    if (alarm.name === GMAIL_SYNC_ALARM) {
-      void import('./gmailSyncRunner.js').then((m) => m.syncLinkedInAcceptances());
-    }
-  });
 }
 

@@ -4,10 +4,11 @@
 // allowing the user to select which job posting to link this person to.
 // =============================================================================
 
-import { PROFILE_NAME_SELECTORS, queryFirst } from './selectors.js';
+import { extractLinkedInProfileName, cleanScrapedName, isValidPersonName } from './selectors.js';
 import { getLinkedInPageType } from './pageClassifier.js';
 
 let modalContainer: HTMLDivElement | null = null;
+let profileNameObserverTimer: ReturnType<typeof setInterval> | null = null;
 
 export interface OpenOverlayOptions {
   fullName?: string | undefined;
@@ -24,55 +25,81 @@ export function initProfileOverlay() {
 function injectFloatingButton() {
   if (getLinkedInPageType() !== 'PROFILE_PAGE') {
     document.getElementById('refloop-profile-floating-btn')?.remove();
+    if (profileNameObserverTimer) {
+      clearInterval(profileNameObserverTimer);
+      profileNameObserverTimer = null;
+    }
     return;
   }
 
-  if (document.getElementById('refloop-profile-floating-btn')) return;
+  const { firstName } = extractLinkedInProfileName();
 
-  const nameEl = queryFirst(PROFILE_NAME_SELECTORS);
-  const fullName = nameEl?.textContent?.trim() ?? 'Contact';
-  const firstName = fullName.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') ?? 'Contact';
+  let button = document.getElementById('refloop-profile-floating-btn') as HTMLButtonElement | null;
+  if (!button) {
+    button = document.createElement('button');
+    button.id = 'refloop-profile-floating-btn';
+    button.style.cssText = `
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background-color: #D97757;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(217, 119, 87, 0.4);
+      z-index: 999999;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: all 0.2s ease;
+    `;
 
-  const button = document.createElement('button');
-  button.id = 'refloop-profile-floating-btn';
+    button.addEventListener('mouseover', () => {
+      button!.style.backgroundColor = '#C86545';
+      button!.style.transform = 'translateY(-1px)';
+    });
+    button.addEventListener('mouseout', () => {
+      button!.style.backgroundColor = '#D97757';
+      button!.style.transform = 'translateY(0)';
+    });
+
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openRefLoopOverlay();
+    });
+
+    document.body.appendChild(button);
+  }
+
   button.innerHTML = `⚡ Add ${firstName} to RefLoop Job`;
-  button.style.cssText = `
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    background-color: #D97757;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(217, 119, 87, 0.4);
-    z-index: 999999;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    transition: all 0.2s ease;
-  `;
 
-  button.addEventListener('mouseover', () => {
-    button.style.backgroundColor = '#C86545';
-    button.style.transform = 'translateY(-1px)';
-  });
-  button.addEventListener('mouseout', () => {
-    button.style.backgroundColor = '#D97757';
-    button.style.transform = 'translateY(0)';
-  });
-
-  button.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openRefLoopOverlay();
-  });
-
-  document.body.appendChild(button);
+  // Start short poller to update the button as soon as SPA DOM renders the top card
+  if (profileNameObserverTimer) {
+    clearInterval(profileNameObserverTimer);
+  }
+  let retries = 0;
+  profileNameObserverTimer = setInterval(() => {
+    retries++;
+    if (!chrome.runtime?.id || getLinkedInPageType() !== 'PROFILE_PAGE') {
+      if (profileNameObserverTimer) clearInterval(profileNameObserverTimer);
+      return;
+    }
+    const current = extractLinkedInProfileName();
+    const btn = document.getElementById('refloop-profile-floating-btn');
+    if (btn && current.firstName && current.firstName !== 'Contact') {
+      btn.innerHTML = `⚡ Add ${current.firstName} to RefLoop Job`;
+      if (profileNameObserverTimer) clearInterval(profileNameObserverTimer);
+    }
+    if (retries >= 10 && profileNameObserverTimer) {
+      clearInterval(profileNameObserverTimer);
+    }
+  }, 400);
 }
 
 export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
@@ -81,13 +108,22 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
   }
 
   let fullName = opts.fullName;
-  if (!fullName) {
-    const nameEl = queryFirst(PROFILE_NAME_SELECTORS);
-    fullName = nameEl?.textContent?.trim() ?? 'Contact';
+  let firstName = 'Contact';
+
+  if (!fullName || fullName === 'Contact') {
+    const extracted = extractLinkedInProfileName();
+    fullName = extracted.fullName;
+    firstName = extracted.firstName;
+  } else {
+    fullName = cleanScrapedName(fullName);
+    if (!isValidPersonName(fullName)) {
+      const extracted = extractLinkedInProfileName();
+      fullName = extracted.fullName;
+      firstName = extracted.firstName;
+    } else {
+      firstName = fullName.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') || 'Contact';
+    }
   }
-  // Clean raw full name
-  fullName = fullName.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
-  const firstName = fullName.split(/\s+/)[0]?.replace(/[^a-zA-Z]/g, '') || 'Contact';
 
   const profileUrl = opts.profileUrl || window.location.href.split('?')[0]!;
   const companyHint = opts.companyNameHint || extractCompanyFromUrl();
@@ -115,7 +151,7 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
     border: 1px solid #E8E3DA;
     border-radius: 20px;
     padding: 24px;
-    width: 440px;
+    width: 460px;
     max-width: calc(100vw - 32px);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
@@ -127,7 +163,7 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
   card.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="width: 34px; height: 34px; background: linear-gradient(135deg, #E06D53 0%, #D97757 100%); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; shadow: 0 2px 8px rgba(217,119,87,0.4);">⚡</div>
+        <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #E06D53 0%, #D97757 100%); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; box-shadow: 0 2px 8px rgba(217,119,87,0.4);">⚡</div>
         <div>
           <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1C1917; line-height: 1.2;">Add Contact to RefLoop</h3>
           <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: 600; color: #D97757;">RefLoop Referral Outreach Pipeline</p>
@@ -137,31 +173,36 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
     </div>
 
     <!-- Candidate Preview Card -->
-    <div style="background: #F4F0EA; border: 1px solid #E8E3DA; border-radius: 12px; padding: 12px 14px; display: flex; items-center; gap: 12px;">
-      <div style="width: 36px; height: 36px; border-radius: 50%; background: #D97757; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; shrink: 0;">
+    <div style="background: #F4F0EA; border: 1px solid #E8E3DA; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 12px;">
+      <div style="width: 38px; height: 38px; border-radius: 50%; background: #D97757; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; flex-shrink: 0;">
         ${firstName[0]?.toUpperCase() ?? 'C'}
       </div>
       <div style="overflow: hidden; flex: 1;">
-        <div style="font-weight: 700; font-size: 14px; color: #1C1917; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${fullName}</div>
+        <div id="refloop-preview-fullname" style="font-weight: 700; font-size: 14px; color: #1C1917; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${fullName}</div>
         <div style="font-size: 11px; color: #78716C; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">LinkedIn Profile</div>
       </div>
     </div>
 
     <div>
       <label style="display: block; font-size: 12px; font-weight: 600; color: #78716C; margin-bottom: 6px;">First Name</label>
-      <input id="refloop-input-firstname" type="text" value="${firstName}" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #E8E3DA; border-radius: 10px; font-size: 13px; background: white; color: #1C1917; font-weight: 500; outline: none;" />
+      <input id="refloop-input-firstname" type="text" value="${firstName}" style="width: 100%; height: 42px; min-height: 42px; line-height: 20px; box-sizing: border-box; padding: 0 14px; border: 1.5px solid #E8E3DA; border-radius: 10px; font-size: 13px; background: white; color: #1C1917; font-weight: 600; outline: none;" />
     </div>
 
     <div>
       <label style="display: block; font-size: 12px; font-weight: 600; color: #78716C; margin-bottom: 6px;">Target Job Posting</label>
-      <select id="refloop-select-job" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border: 1px solid #E8E3DA; border-radius: 10px; font-size: 13px; background: white; color: #1C1917; font-weight: 500; outline: none; cursor: pointer;">
-        <option value="">Loading jobs...</option>
-      </select>
+      <div style="position: relative;">
+        <select id="refloop-select-job" style="width: 100%; height: 42px; min-height: 42px; line-height: 20px; box-sizing: border-box; padding: 0 36px 0 12px; border: 1.5px solid #E8E3DA; border-radius: 10px; font-size: 13px; background-color: #FFFFFF; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 12px center; color: #1C1917; font-weight: 600; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; display: block;">
+          <option value="">Loading jobs...</option>
+        </select>
+      </div>
+      <!-- Job detail banner to display the full job title & company clearly with word wrap -->
+      <div id="refloop-selected-job-info" style="display: none; margin-top: 8px; font-size: 12px; color: #44403C; background: #F4F0EA; border: 1px solid #E8E3DA; border-radius: 8px; padding: 8px 12px; line-height: 1.45; word-break: break-word;">
+      </div>
     </div>
 
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
-      <button id="refloop-cancel-btn" style="padding: 9px 18px; border: 1px solid #E8E3DA; background: white; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: #78716C;">Cancel</button>
-      <button id="refloop-submit-btn" style="padding: 9px 20px; border: none; background: #D97757; color: white; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(217, 119, 87, 0.3);">+ Add ${firstName} to RefLoop</button>
+      <button id="refloop-cancel-btn" style="padding: 10px 18px; border: 1px solid #E8E3DA; background: white; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: #78716C;">Cancel</button>
+      <button id="refloop-submit-btn" style="padding: 10px 20px; border: none; background: #D97757; color: white; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(217, 119, 87, 0.3);">+ Add ${firstName} to RefLoop</button>
     </div>
   `;
 
@@ -173,6 +214,15 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
   closeBtn?.addEventListener('click', () => modalContainer?.remove());
   cancelBtn?.addEventListener('click', () => modalContainer?.remove());
 
+  const firstNameInput = card.querySelector('#refloop-input-firstname') as HTMLInputElement | null;
+  const submitBtn = card.querySelector('#refloop-submit-btn') as HTMLButtonElement | null;
+  firstNameInput?.addEventListener('input', () => {
+    const val = firstNameInput.value.trim();
+    if (submitBtn) {
+      submitBtn.innerText = `+ Add ${val || 'Contact'} to RefLoop`;
+    }
+  });
+
   // Fetch active jobs from storage & pre-select company match if found
   void (async () => {
     try {
@@ -181,7 +231,22 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
       const activeJobs = jobs.filter((j) => j.status === 'ACTIVE');
 
       const selectEl = card.querySelector('#refloop-select-job') as HTMLSelectElement | null;
+      const jobInfoEl = card.querySelector('#refloop-selected-job-info') as HTMLDivElement | null;
       if (!selectEl) return;
+
+      const updateJobInfoDisplay = () => {
+        if (!jobInfoEl) return;
+        const currentId = selectEl.value;
+        const matched = activeJobs.find((j) => j.id === currentId);
+        if (matched) {
+          jobInfoEl.style.display = 'block';
+          jobInfoEl.innerHTML = `<span style="color: #D97757; font-weight: 700;">💼 Target Job:</span> <strong style="color: #1C1917;">${matched.companyName}</strong> — ${matched.jobTitle}`;
+        } else {
+          jobInfoEl.style.display = 'none';
+        }
+      };
+
+      selectEl.addEventListener('change', updateJobInfoDisplay);
 
       if (activeJobs.length === 0) {
         selectEl.innerHTML = '<option value="">No active jobs in RefLoop. Create one first!</option>';
@@ -200,6 +265,8 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
             selectEl.selectedIndex = matchIndex;
           }
         }
+
+        updateJobInfoDisplay();
       }
     } catch {
       const selectEl = card.querySelector('#refloop-select-job') as HTMLSelectElement | null;
@@ -207,7 +274,6 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
     }
   })();
 
-  const submitBtn = card.querySelector('#refloop-submit-btn') as HTMLButtonElement | null;
   submitBtn?.addEventListener('click', () => {
     const firstNameVal = (card.querySelector('#refloop-input-firstname') as HTMLInputElement)?.value;
     const jobIdVal = (card.querySelector('#refloop-select-job') as HTMLSelectElement)?.value;
