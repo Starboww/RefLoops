@@ -26,6 +26,7 @@ function PopupApp() {
   const [jobLink, setJobLink] = useState('');
   const [addedSuccess, setAddedSuccess] = useState(false);
   const [successMsg, setSuccessMsg] = useState('Added to RefLoop!');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -145,9 +146,10 @@ function PopupApp() {
 
   const handleAddContact = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     if (!selectedJobId || !personFirstName || !personProfileUrl) return;
 
-    await chrome.runtime.sendMessage({
+    const res = await chrome.runtime.sendMessage({
       type: 'ADD_LINKEDIN_CONTACT_REQUEST',
       payload: {
         jobPostingId: selectedJobId,
@@ -155,7 +157,12 @@ function PopupApp() {
         linkedinProfileUrl: personProfileUrl,
         fullNameRaw: personName,
       },
-    });
+    }) as { success?: boolean; error?: string } | undefined;
+
+    if (!res?.success) {
+      setErrorMessage(res?.error ?? 'Failed to add contact');
+      return;
+    }
 
     setSuccessMsg(`Added ${personFirstName} to RefLoop!`);
     setAddedSuccess(true);
@@ -223,6 +230,12 @@ function PopupApp() {
             </div>
           </div>
 
+          {errorMessage && (
+            <div className="p-2.5 rounded-xl bg-rose-950/60 border border-rose-800 text-[11px] text-rose-300">
+              ⚠️ {errorMessage}
+            </div>
+          )}
+
           <FormField label="First Name">
             <Input
               value={personFirstName}
@@ -235,7 +248,10 @@ function PopupApp() {
           <FormField label="Target Job Posting">
             <select
               value={selectedJobId}
-              onChange={(e) => setSelectedJobId(e.target.value)}
+              onChange={(e) => {
+                setSelectedJobId(e.target.value);
+                setErrorMessage(null);
+              }}
               className="flex h-9 w-full rounded-xl border border-stone-700 bg-stone-900 px-3 py-1.5 text-xs text-stone-100 font-medium shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D97757]"
             >
               {activeJobs.length === 0 ? (

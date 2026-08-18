@@ -24,6 +24,11 @@ export type {
 } from './domain/models.js';
 
 export { DEFAULT_SETTINGS } from './domain/models.js';
+export {
+  normalizeLinkedInProfileUrl,
+  normalizeEmail,
+  isDuplicateContact,
+} from './domain/urlUtils.js';
 
 // Repository interfaces
 export type {

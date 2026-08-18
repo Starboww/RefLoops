@@ -13,7 +13,6 @@ let scanInterval: ReturnType<typeof setInterval> | null = null;
 let retryTimeouts: Array<ReturnType<typeof setTimeout>> = [];
 
 export function initCompanyPeopleInjector() {
-  console.log('[RefLoop DEBUG] initCompanyPeopleInjector called, pageType=', getLinkedInPageType(), 'url=', window.location.href);
   if (getLinkedInPageType() !== 'COMPANY_PEOPLE_PAGE') {
     destroyCompanyPeopleInjector();
     return;
@@ -307,8 +306,6 @@ export function processPeopleCards() {
     document.querySelectorAll<HTMLAnchorElement>('main a[href*="/in/"], a[href*="/in/"]'),
   ).filter((a) => !a.closest('header, nav, #global-nav, .global-nav, footer'));
 
-  console.log('[RefLoop DEBUG] processPeopleCards: found', profileLinks.length, 'profile links');
-
   let injectedCount = 0;
   profileLinks.forEach((anchor) => {
     const rawHref = anchor.getAttribute('href') || '';
@@ -316,14 +313,12 @@ export function processPeopleCards() {
 
     const card = findSingleCard(anchor);
     if (!card) {
-      console.log('[RefLoop DEBUG] processPeopleCards: findSingleCard returned null for', rawHref);
       return;
     }
 
     injectButtonOnCard(card, anchor, rawHref, companyNameHint);
     injectedCount++;
   });
-  console.log('[RefLoop DEBUG] processPeopleCards: injected via Approach 1:', injectedCount);
 
   // Approach 2: Scan Connect buttons in main content area
   const connectButtons = Array.from(

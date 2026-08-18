@@ -5,7 +5,7 @@
 
 import { createChromeRepositories, type ChromeRepositories } from '@refloop/storage-chrome';
 import type { ExtensionMessage } from '@refloop/core';
-import { isExtensionMessage } from '@refloop/core';
+import { isExtensionMessage, isDuplicateContact } from '@refloop/core';
 import { signIn, signOut } from '../auth/googleAuth.js';
 import { connectGmail, disconnectGmail } from '../auth/gmailAuth.js';
 import { executeSend } from './sendActionRunner.js';
@@ -49,6 +49,21 @@ async function handleMessage(
       }
 
       case 'ADD_LINKEDIN_CONTACT_REQUEST': {
+        const existingContacts = await repos.contacts.getByJobId(message.payload.jobPostingId);
+        if (
+          isDuplicateContact(existingContacts, {
+            jobPostingId: message.payload.jobPostingId,
+            channel: 'LINKEDIN',
+            linkedinProfileUrl: message.payload.linkedinProfileUrl,
+          })
+        ) {
+          sendResponse({
+            success: false,
+            error: 'This LinkedIn profile has already been added to this job posting.',
+          });
+          break;
+        }
+
         const contact = await repos.contacts.create({
           ...message.payload,
           channel: 'LINKEDIN',
@@ -63,6 +78,21 @@ async function handleMessage(
       }
 
       case 'ADD_EMAIL_CONTACT_REQUEST': {
+        const existingContacts = await repos.contacts.getByJobId(message.payload.jobPostingId);
+        if (
+          isDuplicateContact(existingContacts, {
+            jobPostingId: message.payload.jobPostingId,
+            channel: 'EMAIL',
+            emailAddress: message.payload.emailAddress,
+          })
+        ) {
+          sendResponse({
+            success: false,
+            error: 'This email has already been added to this job posting.',
+          });
+          break;
+        }
+
         const contact = await repos.contacts.create({
           ...message.payload,
           channel: 'EMAIL',

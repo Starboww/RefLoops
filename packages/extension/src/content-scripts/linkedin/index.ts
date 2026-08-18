@@ -47,7 +47,6 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) =
 
     if (msg['type'] === 'REFLOOP_NAVIGATED') {
       const targetUrl = (msg['url'] as string) || window.location.href;
-      console.log('[RefLoop DEBUG] REFLOOP_NAVIGATED received, url=', targetUrl, 'pageType=', getLinkedInPageType(targetUrl));
       checkRoute(true, targetUrl);
       return;
     }
@@ -64,7 +63,6 @@ chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) =
 
 function handleRoute() {
   const pageType = getLinkedInPageType();
-  console.log('[RefLoop DEBUG] handleRoute() called, pageType=', pageType, 'url=', window.location.href);
 
   if (pageType === 'PROFILE_PAGE') {
     document.getElementById('refloop-job-injector-btn')?.remove();
@@ -105,7 +103,6 @@ function checkRoute(force = false, explicitUrl?: string) {
   if (!force && currentUrl === lastUrl && currentPageType === lastPageType) {
     return;
   }
-  console.log('[RefLoop DEBUG] checkRoute: force=', force, 'prevPageType=', lastPageType, 'newPageType=', currentPageType);
 
   const prevUrl = lastUrl;
   const prevPageType = lastPageType;

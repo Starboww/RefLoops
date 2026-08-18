@@ -53,6 +53,7 @@ import {
 import {
   MessageAssemblyService,
   validateMessageTemplate,
+  isDuplicateContact,
   type DetectedVariable,
   type JobPosting,
   type Stage,
@@ -100,6 +101,7 @@ export function JobDetailPage() {
   const [firstName, setFirstName] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [emailAddr, setEmailAddr] = useState('');
+  const [contactError, setContactError] = useState<string | null>(null);
   const [addingContact, setAddingContact] = useState(false);
 
   const assembler = useMemo(() => new MessageAssemblyService(), []);
@@ -169,6 +171,25 @@ export function JobDetailPage() {
 
   const handleAddContact = async (e: React.FormEvent) => {
     e.preventDefault();
+    setContactError(null);
+
+    // Client-side duplicate check
+    if (
+      isDuplicateContact(jobContacts, {
+        jobPostingId: job.id,
+        channel: contactChannel,
+        linkedinProfileUrl: contactChannel === 'LINKEDIN' ? linkedinUrl : undefined,
+        emailAddress: contactChannel === 'EMAIL' ? emailAddr : undefined,
+      })
+    ) {
+      const msg =
+        contactChannel === 'LINKEDIN'
+          ? 'This LinkedIn profile is already added to this job posting.'
+          : 'This email address is already added to this job posting.';
+      setContactError(msg);
+      return;
+    }
+
     try {
       setAddingContact(true);
       if (contactChannel === 'LINKEDIN') {
@@ -189,7 +210,10 @@ export function JobDetailPage() {
       setFirstName('');
       setLinkedinUrl('');
       setEmailAddr('');
+      setContactError(null);
       showToast('Contact added successfully!');
+    } catch (err) {
+      setContactError(err instanceof Error ? err.message : 'Failed to add contact');
     } finally {
       setAddingContact(false);
     }
@@ -982,6 +1006,13 @@ export function JobDetailPage() {
               <span>Add Contact at {job.companyName}</span>
             </DialogTitle>
           </DialogHeader>
+
+          {contactError && (
+            <div className="mt-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-rose-500 shrink-0" />
+              <span>{contactError}</span>
+            </div>
+          )}
 
           <form onSubmit={(e) => void handleAddContact(e)} className="space-y-4 py-2">
             <FormField label="Outreach Channel">

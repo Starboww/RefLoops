@@ -223,24 +223,56 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
     }
   });
 
-  // Fetch active jobs from storage & pre-select company match if found
+  // Fetch active jobs and contacts from storage & pre-select company match if found
   void (async () => {
     try {
-      const result = await chrome.storage.local.get('jobs:v1');
+      const result = await chrome.storage.local.get(['jobs:v1', 'contacts:v1']);
       const jobs = (result['jobs:v1'] as Array<{ id: string; companyName: string; jobTitle: string; status: string }>) ?? [];
+      const contacts = (result['contacts:v1'] as Array<{ jobPostingId: string; channel?: string; linkedinProfileUrl?: string; removedAt?: string }>) ?? [];
       const activeJobs = jobs.filter((j) => j.status === 'ACTIVE');
 
       const selectEl = card.querySelector('#refloop-select-job') as HTMLSelectElement | null;
       const jobInfoEl = card.querySelector('#refloop-selected-job-info') as HTMLDivElement | null;
       if (!selectEl) return;
 
+      const normTargetUrl = profileUrl.split('?')[0]!.split('#')[0]!.toLowerCase().replace(/\/+$/, '');
+
+      const isAlreadyAddedToJob = (targetJobId: string): boolean => {
+        return contacts.some((c) => {
+          if (c.jobPostingId !== targetJobId || c.removedAt) return false;
+          if (!c.linkedinProfileUrl) return false;
+          const normC = c.linkedinProfileUrl.split('?')[0]!.split('#')[0]!.toLowerCase().replace(/\/+$/, '');
+          return normC === normTargetUrl || normC.endsWith(normTargetUrl) || normTargetUrl.endsWith(normC);
+        });
+      };
+
       const updateJobInfoDisplay = () => {
         if (!jobInfoEl) return;
         const currentId = selectEl.value;
         const matched = activeJobs.find((j) => j.id === currentId);
+        const alreadyAdded = isAlreadyAddedToJob(currentId);
+
         if (matched) {
           jobInfoEl.style.display = 'block';
-          jobInfoEl.innerHTML = `<span style="color: #D97757; font-weight: 700;">💼 Target Job:</span> <strong style="color: #1C1917;">${matched.companyName}</strong> — ${matched.jobTitle}`;
+          if (alreadyAdded) {
+            jobInfoEl.innerHTML = `
+              <div style="color: #DC2626; font-weight: 700; margin-bottom: 2px;">⚠️ Already added to this job posting</div>
+              <span style="color: #D97757; font-weight: 700;">💼 Target Job:</span> <strong style="color: #1C1917;">${matched.companyName}</strong> — ${matched.jobTitle}
+            `;
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = '0.5';
+              submitBtn.innerText = 'Already in RefLoop Job';
+            }
+          } else {
+            jobInfoEl.innerHTML = `<span style="color: #D97757; font-weight: 700;">💼 Target Job:</span> <strong style="color: #1C1917;">${matched.companyName}</strong> — ${matched.jobTitle}`;
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.style.opacity = '1';
+              const curFirst = (card.querySelector('#refloop-input-firstname') as HTMLInputElement)?.value.trim() || firstName;
+              submitBtn.innerText = `+ Add ${curFirst} to RefLoop`;
+            }
+          }
         } else {
           jobInfoEl.style.display = 'none';
         }
@@ -313,7 +345,7 @@ export function openRefLoopOverlay(opts: OpenOverlayOptions = {}) {
         if (res?.success) {
           showToast(`✓ Added ${firstNameVal || firstName} to RefLoop job!`);
         } else {
-          alert(`Could not add contact: ${res?.error ?? 'Unknown error'}`);
+          showToast(`⚠️ ${res?.error ?? 'Could not add contact'}`);
         }
       },
     );

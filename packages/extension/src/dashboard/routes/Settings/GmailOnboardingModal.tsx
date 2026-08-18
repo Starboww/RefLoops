@@ -182,9 +182,8 @@ export function GmailOnboardingModal({ onSuccess, onCancel }: GmailOnboardingMod
                 <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">Steps to enable:</p>
                 {[
                   'Go to LinkedIn → Me → Settings & Privacy',
-                  'Navigate to Communications → Email notifications',
-                  'Find "Invitations and connections" section',
-                  'Ensure "Accepted invitations" is turned ON ✓',
+                  'Navigate to Notifications → Connecting with others',
+                  'Under "Invitations", ensure Email notification is turned ON ✓',
                 ].map((step, i) => (
                   <div key={i} className="flex items-start space-x-2.5">
                     <span className="h-5 w-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-700 dark:text-amber-200 text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -196,12 +195,12 @@ export function GmailOnboardingModal({ onSuccess, onCancel }: GmailOnboardingMod
               </div>
 
               <a
-                href="https://www.linkedin.com/mypreferences/d/email-notifications"
+                href="https://www.linkedin.com/mypreferences/d/categories/notifications/connections/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center space-x-2 w-full px-4 py-2.5 rounded-xl border border-[#0077B5] text-[#0077B5] dark:text-blue-400 dark:border-blue-500 text-xs font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
               >
-                <span>Open LinkedIn Email Settings</span>
+                <span>Open LinkedIn Notification Settings</span>
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
 
