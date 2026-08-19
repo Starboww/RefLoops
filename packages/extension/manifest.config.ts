@@ -10,7 +10,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'RefLoop — LinkedIn Referral Tracker',
   description:
-    'Track your LinkedIn referral outreach pipeline. Log jobs, manage contacts across LinkedIn and Email, and never let a warm connection go cold.',
+    'Track your referral outreach pipeline. Log jobs, manage contacts on LinkedIn and Email, and never miss a follow-up.',
   version: packageJson.version,
   version_name: `${packageJson.version} (beta)`,
 

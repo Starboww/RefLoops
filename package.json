@@ -2,10 +2,11 @@
   "name": "refloop",
   "private": true,
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "LinkedIn Referral Outreach Tracker — Chrome Extension",
   "scripts": {
     "build": "pnpm --filter extension build",
+    "zip": "pnpm run build && cd packages/extension/dist && zip -r ../../../refloop.zip . && cd ../../..",
     "dev": "pnpm --filter extension dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
