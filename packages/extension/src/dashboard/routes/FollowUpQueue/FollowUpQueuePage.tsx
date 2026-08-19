@@ -1,7 +1,7 @@
-import { Clock, Send, XCircle } from 'lucide-react';
+import { Clock, Send, XCircle, RotateCcw } from 'lucide-react';
 import { Button, StatusPill, Card, EmptyState } from '@refloop/ui';
 import { useContactsStore, useJobsStore, useSettingsStore } from '../../store';
-import { sendMessage, cancelQueueItem } from '../../services/appService';
+import { sendMessage, cancelQueueItem, revertContactStage } from '../../services/appService';
 import { MessageAssemblyService } from '@refloop/core';
 
 export function FollowUpQueuePage() {
@@ -67,6 +67,16 @@ export function FollowUpQueuePage() {
                 </div>
 
                 <div className="flex items-center space-x-2 shrink-0">
+                  <Button
+                    onClick={() => void revertContactStage(contact.id)}
+                    variant="outline"
+                    size="sm"
+                    className="space-x-1.5 text-xs text-stone-600 dark:text-stone-300"
+                    title="Revert to previous stage (e.g. back to Outreach)"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    <span>Revert State</span>
+                  </Button>
                   {isReady && (
                     <Button
                       onClick={() => void sendMessage(contact.id, stage)}

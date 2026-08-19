@@ -44,7 +44,7 @@ export type { Clock } from './clock/Clock.js';
 export { SystemClock, FixedClock } from './clock/Clock.js';
 
 // Messages
-export type { ExtensionMessage, MessageType, PasteAndSendMessage } from './messages/messages.js';
+export type { ExtensionMessage, MessageType, PasteAndSendMessage, OpenComposerAndSendMessage } from './messages/messages.js';
 export { isExtensionMessage } from './messages/messages.js';
 
 // Services
@@ -74,4 +74,6 @@ export {
   findMatchingContacts,
   isLinkedInSender,
   type MatchResult,
+  type ContactMatch,
+  type MatchDecision,
 } from './services/gmailLinkedInMatcher.js';

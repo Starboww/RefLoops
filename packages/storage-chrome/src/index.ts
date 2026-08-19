@@ -14,7 +14,7 @@ export type { Unsubscribe } from './changeBus.js';
 export { ChromeJobRepository } from './ChromeJobRepository.js';
 export { ChromeContactRepository } from './ChromeContactRepository.js';
 export { ChromeSettingsRepository, ChromeUserAccountRepository } from './ChromeSettingsRepository.js';
-export { ChromeGmailSyncRepository, type GmailSyncState } from './ChromeGmailSyncRepository.js';
+export { ChromeGmailSyncRepository, type GmailSyncState, type UnmatchedAcceptance } from './ChromeGmailSyncRepository.js';
 export { onKeyChanged, storageGet, storageSet, storageRemove } from './changeBus.js';
 export { runMigrations } from './migrations/index.js';
 

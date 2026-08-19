@@ -44,10 +44,31 @@ export const COMPOSER_TEXTAREA_SELECTORS = [
  * Anchor: aria-label "Send" or button type submit within the compose form.
  */
 export const COMPOSER_SEND_BUTTON_SELECTORS = [
-  'button.msg-form__send-button[aria-label*="Send"]',
-  'button[type="submit"][aria-label*="Send"]',
+  'button.msg-form__send-button',
+  'button[type="submit"].msg-form__send-button',
+  'button[type="submit"][aria-label*="Send" i]',
+  'button.msg-form__send-button[aria-label*="Send" i]',
+  'form.msg-form button[type="submit"]',
+  'button[aria-label="Send" i]',
+  'button[aria-label*="Send" i]',
   '.msg-form__send-btn',
-  'button[aria-label="Send"]',
+];
+
+/**
+ * "Message" button on a LinkedIn profile page — clicks this to open the
+ * message composer dialog for a 1st-degree connection.
+ * Anchor: aria-label starting with "Message" is the most stable across redesigns.
+ * Fallbacks use structural selectors for older LinkedIn layouts.
+ */
+export const MESSAGE_BUTTON_SELECTORS = [
+  'button[aria-label^="Message"]',                                // primary — aria-label is stable
+  'a[aria-label^="Message"]',                                     // some variants use <a> tags
+  '.pvs-profile-actions button[aria-label*="Message" i]',         // within profile actions bar
+  '.pv-s-profile-actions__message',                               // older LinkedIn layout
+  '.message-anywhere-button',                                     // legacy class
+  '[data-control-name="message"]',                                // data attribute fallback
+  'a[href*="/messaging/compose"]',                                 // direct compose link
+  'a[href*="messaging/thread/new"]',                              // new-thread deep link
 ];
 
 /**

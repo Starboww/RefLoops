@@ -113,12 +113,41 @@ export interface ResolveGmailAmbiguityMessage {
   };
 }
 
+export interface GmailResetAndResyncMessage {
+  type: 'GMAIL_RESET_AND_RESYNC';
+}
+
+export interface DismissGmailAmbiguityMessage {
+  type: 'DISMISS_GMAIL_AMBIGUITY';
+  payload: {
+    /** All REVIEW_REQUIRED contact IDs to revert back to PENDING */
+    ambiguousContactIds: string[];
+    /** The Gmail message ID to mark as permanently processed (no match chosen) */
+    gmailMessageId: string;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Background → Content Script
 // ---------------------------------------------------------------------------
 
 export interface PasteAndSendMessage {
   type: 'PASTE_AND_SEND';
+  payload: {
+    message: string;
+    contactId: string;
+    stage: Stage;
+  };
+}
+
+/**
+ * Sent from background → content script to open LinkedIn's message composer
+ * (by clicking the native "Message" button on a profile page) and then
+ * paste the assembled message and send it.
+ * Used when the composer is NOT already open — e.g. profile page just loaded.
+ */
+export interface OpenComposerAndSendMessage {
+  type: 'OPEN_COMPOSER_AND_SEND';
   payload: {
     message: string;
     contactId: string;
@@ -180,6 +209,7 @@ export type ExtensionMessage =
   | HousekeepingRunMessage
   | ExportDataMessage
   | PasteAndSendMessage
+  | OpenComposerAndSendMessage
   | SendConfirmedMessage
   | SendFailedMessage
   | ContactUpdatedMessage
@@ -188,7 +218,9 @@ export type ExtensionMessage =
   | DisconnectGmailMessage
   | GmailSyncNowMessage
   | GetGmailSyncStateMessage
-  | ResolveGmailAmbiguityMessage;
+  | ResolveGmailAmbiguityMessage
+  | GmailResetAndResyncMessage
+  | DismissGmailAmbiguityMessage;
 
 export type MessageType = ExtensionMessage['type'];
 

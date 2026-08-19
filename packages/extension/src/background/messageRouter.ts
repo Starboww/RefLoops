@@ -10,7 +10,7 @@ import { signIn, signOut } from '../auth/googleAuth.js';
 import { connectGmail, disconnectGmail } from '../auth/gmailAuth.js';
 import { executeSend } from './sendActionRunner.js';
 import { runHousekeeping } from './housekeepingRunner.js';
-import { syncLinkedInAcceptances } from './gmailSyncRunner.js';
+import { syncLinkedInAcceptances, resetAndResync } from './gmailSyncRunner.js';
 
 export function messageRouter(): void {
   chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
@@ -224,10 +224,15 @@ async function handleMessage(
 
       case 'RESOLVE_GMAIL_AMBIGUITY': {
         const { resolvedContactId, ambiguousContactIds } = message.payload;
-        // Mark the chosen contact as ACCEPTED
+        const allContacts = await repos.contacts.getAll();
+        const contact = allContacts.find((c) => c.id === resolvedContactId);
         await repos.contacts.update(resolvedContactId, {
           connectionStatus: 'ACCEPTED',
           connectionAcceptedAt: new Date().toISOString(),
+          outreachMessageStatus:
+            contact?.outreachMessageStatus === 'QUEUED'
+              ? 'READY_TO_SEND'
+              : contact?.outreachMessageStatus ?? 'READY_TO_SEND',
         });
         // Revert the other ambiguous contacts back to PENDING
         for (const id of ambiguousContactIds) {
@@ -238,6 +243,30 @@ async function handleMessage(
             });
           }
         }
+        sendResponse({ success: true });
+        break;
+      }
+
+      case 'GMAIL_RESET_AND_RESYNC': {
+        await resetAndResync();
+        const syncStateAfterReset = await repos.gmailSync.getSyncState();
+        sendResponse({ success: true, state: syncStateAfterReset });
+        break;
+      }
+
+      case 'DISMISS_GMAIL_AMBIGUITY': {
+        const { ambiguousContactIds, gmailMessageId } = message.payload;
+        // Revert all REVIEW_REQUIRED contacts back to PENDING
+        for (const id of ambiguousContactIds) {
+          await repos.contacts.update(id, {
+            connectionStatus: 'PENDING',
+            acceptanceGmailMessageId: undefined,
+          });
+        }
+        // Mark the Gmail message as permanently processed (no match)
+        await repos.gmailSync.addProcessedMessageId(gmailMessageId);
+        // Also remove from unmatched cache if it was there
+        await repos.gmailSync.removeUnmatchedAcceptance(gmailMessageId);
         sendResponse({ success: true });
         break;
       }

@@ -159,13 +159,23 @@ export class HousekeepingService {
           contact.linkedinProfileUrl &&
           acceptedProfiles.has(this.normalizeProfileUrl(contact.linkedinProfileUrl))
         ) {
-          // ACCEPTED: connection appeared in 1st-degree list — PRD §11.3
           Object.assign(patch, {
             connectionStatus: 'ACCEPTED',
             outreachMessageStatus: 'READY_TO_SEND',
           });
         }
       }
+    }
+
+    // ---- Auto-heal: LinkedIn contact is ACCEPTED but outreach status is still QUEUED ----
+    if (
+      contact.channel === 'LINKEDIN' &&
+      contact.connectionStatus === 'ACCEPTED' &&
+      contact.outreachMessageStatus === 'QUEUED'
+    ) {
+      Object.assign(patch, {
+        outreachMessageStatus: 'READY_TO_SEND',
+      });
     }
 
     // ---- Email expiry safety net — PRD §7.7 point 2 ----

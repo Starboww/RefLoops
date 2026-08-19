@@ -121,6 +121,35 @@ export async function markConnectionAccepted(contactId: string): Promise<void> {
   });
 }
 
+export async function revertContactStage(contactId: string): Promise<Contact> {
+  const repos = await createChromeRepositories();
+  const contacts = await repos.contacts.getAll();
+  const contact = contacts.find((c) => c.id === contactId);
+  if (!contact) throw new Error('Contact not found');
+
+  const patch: Partial<Contact> = {};
+
+  if (contact.followUp2Status !== 'NOT_SCHEDULED') {
+    // Revert from Follow-up 2 back to Follow-up 1
+    patch.followUp2Status = 'NOT_SCHEDULED';
+    patch.followUp2ScheduledFor = undefined;
+    patch.followUp2SentAt = undefined;
+    patch.followUp1Status = 'READY_TO_SEND';
+  } else if (
+    contact.followUp1Status !== 'NOT_SCHEDULED' ||
+    contact.outreachMessageStatus === 'SENT'
+  ) {
+    // Revert from Follow-up 1 back to Outreach (Ready to Send)
+    patch.followUp1Status = 'NOT_SCHEDULED';
+    patch.followUp1ScheduledFor = undefined;
+    patch.followUp1SentAt = undefined;
+    patch.outreachMessageStatus = 'READY_TO_SEND';
+    patch.outreachMessageSentAt = undefined;
+  }
+
+  return repos.contacts.update(contactId, patch);
+}
+
 export async function runHousekeepingNow(): Promise<void> {
   await chrome.runtime.sendMessage({ type: 'HOUSEKEEPING_RUN' });
 }
@@ -134,6 +163,38 @@ export async function sendMessage(
   stage: Stage,
   messageOverride?: string,
 ): Promise<void> {
+  // Assemble the message in the dashboard context so we can copy it to clipboard
+  // (navigator.clipboard works reliably here but NOT in the background service worker)
+  if (!messageOverride) {
+    try {
+      const { MessageAssemblyService } = await import('@refloop/core');
+      const repos = await createChromeRepositories();
+      const [contacts, jobs, settings] = await Promise.all([
+        repos.contacts.getAll(),
+        repos.jobs.getAll(),
+        repos.settings.get(),
+      ]);
+      const contact = contacts.find((c) => c.id === contactId);
+      const job = contact ? jobs.find((j) => j.id === contact.jobPostingId) : undefined;
+      if (contact && job) {
+        const assembler = new MessageAssemblyService();
+        const assembled = assembler.assemble(stage, job, contact, settings);
+        messageOverride = assembled.body;
+      }
+    } catch {
+      // Assembly failed — background will assemble its own copy
+    }
+  }
+
+  // Copy the assembled message to clipboard so the user can paste manually
+  if (messageOverride) {
+    try {
+      await navigator.clipboard.writeText(messageOverride);
+    } catch {
+      // Clipboard copy is best-effort
+    }
+  }
+
   const result = await chrome.runtime.sendMessage({
     type: 'SEND_MESSAGE_REQUEST',
     payload: { contactId, stage, messageOverride },
@@ -335,6 +396,7 @@ export async function getGmailSyncState(): Promise<GmailSyncState> {
   return r.state!;
 }
 
+
 export async function resolveGmailAmbiguity(
   resolvedContactId: string,
   ambiguousContactIds: string[],
@@ -346,3 +408,34 @@ export async function resolveGmailAmbiguity(
   if (!r.success) throw new Error(r.error ?? 'Failed to resolve ambiguity');
 }
 
+/**
+ * Dismiss an ambiguous Gmail match — reverts all REVIEW_REQUIRED contacts to PENDING
+ * and permanently marks the Gmail message as processed (no match chosen).
+ */
+export async function dismissGmailAmbiguity(
+  ambiguousContactIds: string[],
+  gmailMessageId: string,
+): Promise<void> {
+  const r = await chrome.runtime.sendMessage({
+    type: 'DISMISS_GMAIL_AMBIGUITY',
+    payload: { ambiguousContactIds, gmailMessageId },
+  }) as { success: boolean; error?: string };
+  if (!r.success) throw new Error(r.error ?? 'Failed to dismiss ambiguity');
+}
+
+/**
+ * Clear the entire Gmail sync cache (processed IDs + unmatched acceptance cache)
+ * and run a fresh sync from scratch.
+ *
+ * Use this when a contact was added after their acceptance email was already seen
+ * (e.g. the Indu scenario). Returns the resulting sync state.
+ */
+export async function resetGmailSyncAndResync(): Promise<GmailSyncState> {
+  const r = await chrome.runtime.sendMessage({ type: 'GMAIL_RESET_AND_RESYNC' }) as {
+    success: boolean;
+    state?: GmailSyncState;
+    error?: string;
+  };
+  if (!r.success) throw new Error(r.error ?? 'Reset and re-sync failed');
+  return r.state!;
+}

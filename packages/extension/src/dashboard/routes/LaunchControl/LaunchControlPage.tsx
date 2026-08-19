@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Send, Linkedin, Mail, Edit3, XCircle, RefreshCw, CheckCircle2, Clock, Info } from 'lucide-react';
+import { Send, Linkedin, Mail, Edit3, XCircle, RefreshCw, CheckCircle2, Clock, Info, AlertCircle, RotateCcw } from 'lucide-react';
 import { Button, Card, EmptyState, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Textarea } from '@refloop/ui';
 import { useContactsStore, useJobsStore, useSettingsStore } from '../../store';
-import { sendMessage, cancelQueueItem, markConnectionAccepted, runHousekeepingNow } from '../../services/appService';
+import { sendMessage, cancelQueueItem, markConnectionAccepted, runHousekeepingNow, resolveGmailAmbiguity, dismissGmailAmbiguity, revertContactStage } from '../../services/appService';
 import { MessageAssemblyService, type Contact, type JobPosting, type Stage } from '@refloop/core';
 
 export function LaunchControlPage() {
@@ -27,7 +27,10 @@ export function LaunchControlPage() {
     if (!job || job.status !== 'ACTIVE' || c.removedAt) continue;
 
     // Outreach stage
-    if (c.outreachMessageStatus === 'READY_TO_SEND') {
+    if (
+      c.outreachMessageStatus === 'READY_TO_SEND' ||
+      (c.channel === 'LINKEDIN' && c.connectionStatus === 'ACCEPTED' && c.outreachMessageStatus === 'QUEUED')
+    ) {
       readyItems.push({ contact: c, job, stage: 'OUTREACH' });
     } else if (c.outreachMessageStatus === 'QUEUED' && c.channel === 'LINKEDIN') {
       pendingItems.push({
@@ -69,6 +72,21 @@ export function LaunchControlPage() {
     }
   }
 
+  // ---- Needs Review: contacts flagged REVIEW_REQUIRED by Gmail sync ----
+  // Group by acceptanceGmailMessageId so each ambiguous email becomes one card.
+  const reviewGroups = new Map<string, { contacts: Contact[]; contactJobs: Map<string, JobPosting> }>();
+  for (const c of contacts) {
+    if (c.connectionStatus !== 'REVIEW_REQUIRED' || !c.acceptanceGmailMessageId || c.removedAt) continue;
+    const msgId = c.acceptanceGmailMessageId;
+    if (!reviewGroups.has(msgId)) {
+      reviewGroups.set(msgId, { contacts: [], contactJobs: new Map() });
+    }
+    const group = reviewGroups.get(msgId)!;
+    group.contacts.push(c);
+    const job = jobs.find((j) => j.id === c.jobPostingId);
+    if (job) group.contactJobs.set(c.id, job);
+  }
+
   const assembler = new MessageAssemblyService();
 
   const handleSend = async (item: { contact: Contact; stage: Stage }) => {
@@ -97,6 +115,26 @@ export function LaunchControlPage() {
     } finally {
       setTimeout(() => setIsRunningHousekeeping(false), 800);
     }
+  };
+
+  const handleResolveAmbiguity = async (resolvedId: string, allIds: string[]) => {
+    try {
+      await resolveGmailAmbiguity(resolvedId, allIds.filter((id) => id !== resolvedId));
+    } catch (err) {
+      console.error('[RefLoop] Failed to resolve Gmail ambiguity:', err);
+    }
+  };
+
+  const handleDismissAmbiguity = async (allIds: string[], gmailMessageId: string) => {
+    try {
+      await dismissGmailAmbiguity(allIds, gmailMessageId);
+    } catch (err) {
+      console.error('[RefLoop] Failed to dismiss Gmail ambiguity:', err);
+    }
+  };
+
+  const openLinkedInProfile = (url: string) => {
+    void chrome.tabs.create({ url });
   };
 
   return (
@@ -163,6 +201,92 @@ export function LaunchControlPage() {
             </li>
           </ul>
         </Card>
+      )}
+
+      {/* ---- Needs Review: Gmail acceptance disambiguation ---- */}
+      {reviewGroups.size > 0 && (
+        <div className="space-y-3">
+          {Array.from(reviewGroups.entries()).map(([gmailMessageId, group]) => {
+            const allIds = group.contacts.map((c) => c.id);
+            return (
+              <Card
+                key={gmailMessageId}
+                className="p-5 border-amber-300 dark:border-amber-700 bg-amber-50/60 dark:bg-amber-950/20"
+              >
+                <div className="flex items-start space-x-3 mb-4">
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-sm">
+                      Gmail: Connection Accepted — Needs Your Confirmation
+                    </h3>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                      {group.contacts.length === 1
+                        ? 'We found 1 possible match. Confirm if this is the right person.'
+                        : `We found ${group.contacts.length} people this could be. Tap "This is them" next to the right person.`}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-4">
+                  {group.contacts.map((contact) => {
+                    const job = group.contactJobs.get(contact.id);
+                    return (
+                      <div
+                        key={contact.id}
+                        className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700"
+                      >
+                        <div className="flex items-center space-x-3 min-w-0">
+                          <div className="min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-sm text-stone-900 dark:text-stone-100 truncate">
+                                {contact.fullNameRaw ?? contact.firstName}
+                              </span>
+                              {contact.linkedinProfileUrl && (
+                                <button
+                                  onClick={() => openLinkedInProfile(contact.linkedinProfileUrl!)}
+                                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors shrink-0"
+                                  title="View LinkedIn profile"
+                                >
+                                  <Linkedin className="h-4 w-4" />
+                                </button>
+                              )}
+                            </div>
+                            {job && (
+                              <p className="text-xs text-stone-500 dark:text-stone-400 truncate mt-0.5">
+                                {job.companyName} · {job.jobTitle}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => void handleResolveAmbiguity(contact.id, allIds)}
+                          variant="primary"
+                          size="sm"
+                          className="shrink-0 ml-4 space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span>This is them</span>
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    onClick={() => void handleDismissAmbiguity(allIds, gmailMessageId)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 text-xs"
+                  >
+                    None of these
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
       )}
 
       {/* Tabs */}
@@ -237,6 +361,19 @@ export function LaunchControlPage() {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    {stage !== 'OUTREACH' && (
+                      <Button
+                        onClick={() => void revertContactStage(contact.id)}
+                        variant="outline"
+                        size="sm"
+                        className="space-x-1 text-xs text-stone-600 dark:text-stone-300"
+                        title={stage === 'FU2' ? 'Revert to Follow-up 1' : 'Revert to Outreach'}
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        <span>{stage === 'FU2' ? 'Revert to FU1' : 'Revert to Outreach'}</span>
+                      </Button>
+                    )}
+
                     <Button
                       onClick={() => {
                         setEditingItem({ contact, job, stage });
@@ -310,6 +447,18 @@ export function LaunchControlPage() {
                 </div>
 
                 <div className="flex items-center space-x-2 shrink-0">
+                  {(stage === 'FU1' || stage === 'FU2') && (
+                    <Button
+                      onClick={() => void revertContactStage(contact.id)}
+                      variant="outline"
+                      size="sm"
+                      className="space-x-1.5 text-xs text-stone-600 dark:text-stone-300"
+                      title={stage === 'FU2' ? 'Revert to Follow-up 1' : 'Revert to Outreach'}
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      <span>{stage === 'FU2' ? 'Revert to FU1' : 'Revert to Outreach'}</span>
+                    </Button>
+                  )}
                   {contact.channel === 'LINKEDIN' && contact.connectionStatus === 'PENDING' && (
                     <Button
                       onClick={() => void markConnectionAccepted(contact.id)}

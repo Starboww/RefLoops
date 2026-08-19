@@ -22,6 +22,7 @@ import {
   Info,
   Calendar,
   Building2,
+  RotateCcw,
 } from 'lucide-react';
 import {
   Button,
@@ -49,6 +50,8 @@ import {
   sendMessage,
   deleteContact,
   updateSettings,
+  markConnectionAccepted,
+  revertContactStage,
 } from '../../services/appService';
 import {
   MessageAssemblyService,
@@ -472,15 +475,26 @@ export function JobDetailPage() {
               {jobContacts.map((contact) => {
                 const isReady =
                   contact.outreachMessageStatus === 'READY_TO_SEND' ||
+                  (contact.channel === 'LINKEDIN' && contact.connectionStatus === 'ACCEPTED' && contact.outreachMessageStatus === 'QUEUED') ||
                   contact.followUp1Status === 'READY_TO_SEND' ||
                   contact.followUp2Status === 'READY_TO_SEND';
 
                 const readyStage: Stage =
-                  contact.outreachMessageStatus === 'READY_TO_SEND'
+                  contact.outreachMessageStatus === 'READY_TO_SEND' || (contact.channel === 'LINKEDIN' && contact.connectionStatus === 'ACCEPTED' && contact.outreachMessageStatus === 'QUEUED')
                     ? 'OUTREACH'
                     : contact.followUp1Status === 'READY_TO_SEND'
                     ? 'FU1'
                     : 'FU2';
+
+                const canRevert =
+                  contact.outreachMessageStatus === 'SENT' ||
+                  contact.followUp1Status !== 'NOT_SCHEDULED' ||
+                  contact.followUp2Status !== 'NOT_SCHEDULED';
+
+                const revertLabel =
+                  contact.followUp2Status !== 'NOT_SCHEDULED'
+                    ? 'Revert to FU1'
+                    : 'Revert to Outreach';
 
                 return (
                   <Card
@@ -564,11 +578,42 @@ export function JobDetailPage() {
 
                     {/* Right: Actions */}
                     <div className="flex items-center space-x-2.5 shrink-0 self-end md:self-center">
+                      {contact.channel === 'LINKEDIN' && contact.connectionStatus === 'PENDING' && (
+                        <Button
+                          onClick={() => {
+                            void markConnectionAccepted(contact.id);
+                            showToast(`Marked connection with ${contact.firstName} as accepted! 🎉`);
+                          }}
+                          variant="primary"
+                          size="sm"
+                          className="space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm font-semibold"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          <span>Mark Accepted</span>
+                        </Button>
+                      )}
+
+                      {canRevert && (
+                        <Button
+                          onClick={async () => {
+                            await revertContactStage(contact.id);
+                            showToast(`Moved ${contact.firstName} back to previous state! ↩️`);
+                          }}
+                          variant="outline"
+                          size="sm"
+                          className="space-x-1.5 text-xs text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800"
+                          title={revertLabel}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          <span>{revertLabel}</span>
+                        </Button>
+                      )}
+
                       {isReady && (
                         <Button
                           onClick={() => {
                             void sendMessage(contact.id, readyStage);
-                            showToast(`Dispatched message to ${contact.firstName}! 🚀`);
+                            showToast(`Message copied! Click "Message" on ${contact.firstName}'s profile → Cmd+A → Cmd+V 📋`);
                           }}
                           variant="primary"
                           size="sm"

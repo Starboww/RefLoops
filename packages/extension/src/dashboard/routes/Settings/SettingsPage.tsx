@@ -34,6 +34,7 @@ import {
   gmailSyncNow,
   disconnectGmail,
   getGmailSyncState,
+  resetGmailSyncAndResync,
 } from '../../services/appService';
 import { GmailOnboardingModal } from './GmailOnboardingModal';
 import {
@@ -74,6 +75,7 @@ export function SettingsPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [gmailState, setGmailState] = useState<GmailSyncState | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
   const [disconnecting, setDisconnecting] = useState(false);
 
@@ -233,6 +235,20 @@ export function SettingsPage() {
       setSyncError(err instanceof Error ? err.message : 'Sync failed');
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleResetAndResync = async () => {
+    setResetting(true);
+    setSyncError(null);
+    try {
+      const state = await resetGmailSyncAndResync();
+      setGmailState(state);
+      showToast('Sync cache cleared — re-scanning from scratch!');
+    } catch (err) {
+      setSyncError(err instanceof Error ? err.message : 'Reset failed');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -1212,7 +1228,7 @@ export function SettingsPage() {
                         </div>
                       )}
 
-                      <div className="flex items-center space-x-3 pt-1">
+                      <div className="flex flex-wrap items-center gap-3 pt-1">
                         <Button
                           id="gmail-sync-now-btn"
                           onClick={() => void handleSyncNow()}
@@ -1223,6 +1239,19 @@ export function SettingsPage() {
                         >
                           {!syncing && <RefreshCw className="h-3.5 w-3.5" />}
                           <span>Scan Now</span>
+                        </Button>
+
+                        <Button
+                          id="gmail-reset-resync-btn"
+                          onClick={() => void handleResetAndResync()}
+                          variant="outline"
+                          size="sm"
+                          isLoading={resetting}
+                          title="Clears the processed-messages cache and scans all emails from scratch — fixes contacts that were added after their acceptance email was seen"
+                          className="space-x-1.5 text-xs h-9 rounded-xl font-bold text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-900/20"
+                        >
+                          {!resetting && <RefreshCw className="h-3.5 w-3.5" />}
+                          <span>Reset &amp; Re-sync</span>
                         </Button>
 
                         <Button
