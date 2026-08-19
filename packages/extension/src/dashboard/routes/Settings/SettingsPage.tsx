@@ -1296,7 +1296,7 @@ export function SettingsPage() {
               <div className="p-4 rounded-xl bg-white/60 dark:bg-stone-800/40 border border-amber-200/60 dark:border-amber-800/40 text-xs text-stone-600 dark:text-stone-400 flex items-start space-x-3">
                 <Info className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                 <span>
-                  Enable the toggle above to connect your Gmail and automatically move contacts to <code>READY_TO_SEND</code> when connections are accepted.
+                  Enable the toggle above to connect your Gmail and automatically move contacts to <strong>Ready to Send</strong> in Launch Control when connections are accepted.
                 </span>
               </div>
             )}

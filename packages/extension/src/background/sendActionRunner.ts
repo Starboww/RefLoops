@@ -87,7 +87,7 @@ async function sendLinkedIn(
         type: 'OPEN_COMPOSER_AND_SEND',
         payload: { message, contactId: contact.id, stage: 'OUTREACH' },
       },
-      (response: { success: boolean; error?: string } | undefined) => {
+      (_response: { success: boolean; error?: string } | undefined) => {
         clearTimeout(timeout);
         if (chrome.runtime.lastError) {
           // Content script not reachable — still OK, message is on clipboard

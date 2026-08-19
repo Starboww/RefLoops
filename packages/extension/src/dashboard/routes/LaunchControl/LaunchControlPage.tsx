@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Linkedin, Mail, Edit3, XCircle, RefreshCw, CheckCircle2, Clock, Info, AlertCircle, RotateCcw } from 'lucide-react';
+import { Send, Linkedin, Mail, Edit3, XCircle, RefreshCw, CheckCircle2, Clock, Info, AlertCircle, RotateCcw, ArrowRight, X } from 'lucide-react';
 import { Button, Card, EmptyState, Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, Textarea } from '@refloop/ui';
 import { useContactsStore, useJobsStore, useSettingsStore } from '../../store';
 import { sendMessage, cancelQueueItem, markConnectionAccepted, runHousekeepingNow, resolveGmailAmbiguity, dismissGmailAmbiguity, revertContactStage } from '../../services/appService';
@@ -178,29 +178,114 @@ export function LaunchControlPage() {
       </div>
 
       {showInfo && (
-        <Card className="p-4 bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800 text-xs text-indigo-950 dark:text-indigo-200 space-y-2 relative">
-          <button
-            onClick={() => setShowInfo(false)}
-            className="absolute top-3 right-3 text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-200 font-bold"
-          >
-            ✕
-          </button>
-          <div className="font-bold flex items-center space-x-2 text-indigo-900 dark:text-indigo-100 text-sm">
-            <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-            <span>How Contacts Move to Launch Control:</span>
+        <div className="relative overflow-hidden rounded-2xl border border-indigo-200/80 dark:border-indigo-800/60 bg-gradient-to-br from-indigo-50/70 via-white to-sky-50/50 dark:from-indigo-950/40 dark:via-stone-900 dark:to-sky-950/20 p-5 shadow-xs transition-all">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center space-x-2.5">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600/10 text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-300">
+                <Info className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                  How Contacts Move to Launch Control
+                </h3>
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  Messages automatically progress through status stages until they are ready for you to dispatch.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowInfo(false)}
+              className="rounded-lg p-1 text-stone-400 hover:bg-stone-200/60 hover:text-stone-600 dark:hover:bg-stone-800 dark:hover:text-stone-200 transition-colors"
+              title="Dismiss banner"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-          <ul className="list-disc pl-5 space-y-1 text-stone-700 dark:text-indigo-200">
-            <li>
-              <strong>LinkedIn Contacts:</strong> Added as <em>Queued (Pending Connection)</em>. Once the connection is accepted on LinkedIn (or manually marked accepted), status becomes <code>READY_TO_SEND</code> and appears here for your manual send click.
-            </li>
-            <li>
-              <strong>Email Contacts:</strong> Automatically land in <code>READY_TO_SEND</code> as soon as created.
-            </li>
-            <li>
-              <strong>Follow-up Messages:</strong> When an outreach is sent, follow-ups are scheduled. When their target delay time arrives, they flip to <code>READY_TO_SEND</code> here.
-            </li>
-          </ul>
-        </Card>
+
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+            {/* LinkedIn Card */}
+            <div className="flex flex-col justify-between rounded-xl border border-indigo-100/80 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 p-3.5 shadow-2xs backdrop-blur-xs">
+              <div>
+                <div className="flex items-center space-x-2 text-xs font-semibold text-stone-900 dark:text-stone-100 mb-2.5">
+                  <Linkedin className="h-3.5 w-3.5 text-[#0A66C2]" />
+                  <span>LinkedIn Outreach</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 py-1">
+                  <span className="rounded-md bg-stone-100 dark:bg-stone-800 px-2 py-0.5 text-[11px] font-medium text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                    Queued
+                  </span>
+                  <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
+                  <span className="rounded-md bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                    Accepted
+                  </span>
+                  <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
+                  <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    Ready to Send
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-2.5 text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
+                Waits in <strong>Queued</strong> until connection request is accepted, then unlocks here for 1-click send.
+              </p>
+            </div>
+
+            {/* Email Card */}
+            <div className="flex flex-col justify-between rounded-xl border border-indigo-100/80 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 p-3.5 shadow-2xs backdrop-blur-xs">
+              <div>
+                <div className="flex items-center space-x-2 text-xs font-semibold text-stone-900 dark:text-stone-100 mb-2.5">
+                  <Mail className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>Email Outreach</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 py-1">
+                  <span className="rounded-md bg-stone-100 dark:bg-stone-800 px-2 py-0.5 text-[11px] font-medium text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                    Added
+                  </span>
+                  <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
+                  <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    Ready to Send
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-2.5 text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
+                No connection approval needed. Lands immediately in <strong>Ready to Send</strong> to review and dispatch.
+              </p>
+            </div>
+
+            {/* Follow-ups Card */}
+            <div className="flex flex-col justify-between rounded-xl border border-indigo-100/80 dark:border-stone-800 bg-white/80 dark:bg-stone-900/80 p-3.5 shadow-2xs backdrop-blur-xs">
+              <div>
+                <div className="flex items-center space-x-2 text-xs font-semibold text-stone-900 dark:text-stone-100 mb-2.5">
+                  <Clock className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                  <span>Follow-Up Messages</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5 py-1">
+                  <span className="rounded-md bg-stone-100 dark:bg-stone-800 px-2 py-0.5 text-[11px] font-medium text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                    Sent
+                  </span>
+                  <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
+                  <span className="rounded-md bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                    Scheduled Wait
+                  </span>
+                  <ArrowRight className="h-3 w-3 text-stone-400 shrink-0" />
+                  <span className="rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    Ready to Send
+                  </span>
+                </div>
+              </div>
+
+              <p className="mt-2.5 text-[11px] leading-relaxed text-stone-600 dark:text-stone-400">
+                Once initial message is sent, a delay timer starts. When due, follow-ups appear here to send.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ---- Needs Review: Gmail acceptance disambiguation ---- */}
@@ -425,7 +510,7 @@ export function LaunchControlPage() {
         ) : (
           <div className="space-y-4">
             {pendingItems.map(({ contact, job, stage, reason }) => (
-              <Card key={`${contact.id}-${stage}`} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-amber-500">
+              <Card key={`${contact.id}-${stage}`} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4 border-l-purple-500">
                 <div className="space-y-1.5 max-w-2xl">
                   <div className="flex items-center space-x-3">
                     {contact.channel === 'LINKEDIN' ? (
@@ -434,14 +519,14 @@ export function LaunchControlPage() {
                       <Mail className="h-4 w-4 text-purple-600 shrink-0" />
                     )}
                     <h3 className="font-bold text-stone-900 dark:text-stone-100">{contact.firstName}</h3>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80">
                       {stage} • PENDING
                     </span>
                     <span className="text-xs text-stone-500">• {job.companyName} ({job.jobTitle})</span>
                   </div>
 
                   <p className="text-xs text-stone-600 dark:text-stone-400 flex items-center space-x-1.5">
-                    <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    <Clock className="h-3.5 w-3.5 text-purple-500 shrink-0" />
                     <span>{reason}</span>
                   </p>
                 </div>
