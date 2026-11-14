@@ -74,7 +74,7 @@ function handleRoute() {
     destroyCompanyPeopleInjector();
     initAddToTracker();
     initJobsFloatingWidget();
-  } else if (pageType === 'COMPANY_PEOPLE_PAGE') {
+  } else if (pageType === 'COMPANY_PEOPLE_PAGE' || pageType === 'PEOPLE_SEARCH_PAGE') {
     document.getElementById('refloop-job-injector-btn')?.remove();
     document.getElementById('refloop-profile-floating-btn')?.remove();
     destroyWidget();
