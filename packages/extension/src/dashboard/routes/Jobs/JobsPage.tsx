@@ -29,9 +29,9 @@ export function JobsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1C1917] dark:text-stone-100">Job Postings</h1>
-          <p className="text-sm text-[#78716C] dark:text-stone-400">
-            Track jobs, manage outreach contacts, and monitor referral asks.
+          <h1 className="heading-md">Job Postings</h1>
+          <p className="text-regular-sm text-[#C1C6CD] mt-1">
+            Track target roles, manage outreach contacts, and monitor referral asks.
           </p>
         </div>
         <Button onClick={() => setIsAddOpen(true)} variant="primary" className="space-x-2 shrink-0">
@@ -42,23 +42,23 @@ export function JobsPage() {
 
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-stone-400" />
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#8A919D]" />
           <Input
             placeholder="Search company or job title..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-[#1F2228] border-white/10 text-white placeholder:text-[#5F646D]"
           />
         </div>
-        <div className="flex items-center space-x-1 bg-[#F4F0EA] dark:bg-stone-800 p-1 rounded-xl shrink-0 border border-[#E8E3DA] dark:border-stone-800">
+        <div className="flex items-center space-x-1 bg-[#1F2228] p-1 rounded-xl shrink-0 border border-white/10">
           {(['ACTIVE', 'ALL', 'REFERRAL_RECEIVED', 'ARCHIVED'] as const).map((filter) => (
             <button
               key={filter}
               onClick={() => setStatusFilter(filter)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 statusFilter === filter
-                  ? 'bg-white dark:bg-stone-900 text-[#1C1917] dark:text-stone-100 shadow-xs font-bold'
-                  : 'text-[#78716C] dark:text-stone-400 hover:text-[#1C1917] dark:hover:text-stone-100'
+                  ? 'bg-[#292E35] text-white shadow-xs font-semibold border border-white/10'
+                  : 'text-[#8A919D] hover:text-white'
               }`}
             >
               {filter === 'ALL' ? 'All Jobs' : filter.replace('_', ' ')}
@@ -93,22 +93,22 @@ export function JobsPage() {
             return (
               <Card
                 key={job.id}
-                className="group cursor-pointer hover:border-[#D97757] dark:hover:border-stone-700 transition-all hover:shadow-md flex flex-col justify-between"
+                className="group cursor-pointer hover:border-white/25 transition-all hover:shadow-lg flex flex-col justify-between"
               >
                 <div className="p-5 space-y-3" onClick={() => navigate(`/jobs/${job.id}`)}>
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-bold text-[#1C1917] dark:text-stone-100 group-hover:text-[#D97757] dark:group-hover:text-[#E06D53] transition-colors">
+                      <h3 className="font-heading font-bold text-white group-hover:text-[#FF3C6B] transition-colors leading-snug">
                         {job.jobTitle}
                       </h3>
-                      <p className="text-sm font-semibold text-[#78716C] dark:text-stone-400">
+                      <p className="text-xs font-medium text-[#C1C6CD] mt-0.5">
                         {job.companyName}
                       </p>
                     </div>
                     <StatusPill status={job.status} />
                   </div>
 
-                  <div className="flex items-center space-x-4 text-xs text-[#78716C] dark:text-stone-400">
+                  <div className="flex items-center space-x-4 text-xs text-[#8A919D]">
                     <div className="flex items-center space-x-1.5">
                       <Users className="h-3.5 w-3.5" />
                       <span>{jobContacts.length} contacts</span>
@@ -120,17 +120,17 @@ export function JobsPage() {
                   </div>
                 </div>
 
-                <div className="px-5 py-3 border-t border-[#E8E3DA] dark:border-stone-800/60 bg-[#FAF8F5]/50 dark:bg-stone-900/50 flex items-center justify-between text-xs rounded-b-2xl">
+                <div className="px-5 py-3 border-t border-white/10 bg-white/[0.02] flex items-center justify-between text-xs rounded-b-xl">
                   <div className="flex items-center space-x-2" onClick={() => navigate(`/jobs/${job.id}`)}>
                     {readyCount > 0 ? (
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                      <span className="font-semibold text-[#0BDFC5] flex items-center space-x-1.5">
+                        <span className="h-2 w-2 rounded-full bg-[#0BDFC5] animate-pulse inline-block" />
                         <span>{readyCount} ready to send</span>
                       </span>
                     ) : (
-                      <span className="text-stone-400">View details</span>
+                      <span className="text-[#8A919D]">View details</span>
                     )}
-                    <ChevronRight className="h-4 w-4 text-stone-400 group-hover:translate-x-0.5 transition-transform" />
+                    <ChevronRight className="h-4 w-4 text-[#8A919D] group-hover:translate-x-0.5 transition-transform" />
                   </div>
 
                   <button
@@ -138,7 +138,7 @@ export function JobsPage() {
                       e.stopPropagation();
                       setDeleteTargetId(job.id);
                     }}
-                    className="p-1 text-stone-400 hover:text-rose-600 transition-colors"
+                    className="p-1 text-[#8A919D] hover:text-[#DD2C61] transition-colors"
                     title="Delete job"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

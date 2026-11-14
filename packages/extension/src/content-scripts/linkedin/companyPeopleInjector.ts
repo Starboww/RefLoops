@@ -193,18 +193,37 @@ function injectButtonOnCard(
   // Extract person's name
   let fullName = '';
 
-  // 1. Check title/heading inside card
-  const titleEl = card.querySelector(
-    '.org-people-profile-card__profile-title, .artdeco-entity-lockup__title, .discover-person-card__name, [data-view-name*="title"], h3, h4, h2, strong',
-  );
-  if (titleEl?.textContent?.trim()) {
-    const candidate = cleanScrapedName(titleEl.textContent.trim());
-    if (isValidPersonName(candidate)) {
-      fullName = candidate;
+  // 1. Check aria-label on Connect/Invite button inside this card
+  const btnInCard = card.querySelector<HTMLButtonElement>('button[aria-label*="Invite"], button[aria-label*="Connect"], button[aria-label*="Message"]');
+  if (btnInCard) {
+    const btnAria = btnInCard.getAttribute('aria-label') || '';
+    const ariaMatch =
+      btnAria.match(/^Invite\s+(.+?)\s+to\s+connect/i) ||
+      btnAria.match(/^Connect\s+with\s+(.+)/i) ||
+      btnAria.match(/^Invite\s+(.+)/i) ||
+      btnAria.match(/^Message\s+(.+)/i);
+    if (ariaMatch && ariaMatch[1]) {
+      const candidate = cleanScrapedName(ariaMatch[1].trim());
+      if (isValidPersonName(candidate)) {
+        fullName = candidate;
+      }
     }
   }
 
-  // 2. Check aria-label on anchor or card
+  // 2. Check title/heading inside card
+  if (!fullName) {
+    const titleEl = card.querySelector(
+      '.org-people-profile-card__profile-title, .artdeco-entity-lockup__title, .discover-person-card__name, [data-view-name*="title"], h3, h4, h2, strong',
+    );
+    if (titleEl?.textContent?.trim()) {
+      const candidate = cleanScrapedName(titleEl.textContent.trim());
+      if (isValidPersonName(candidate)) {
+        fullName = candidate;
+      }
+    }
+  }
+
+  // 3. Check aria-label on anchor or card
   if (!fullName) {
     const ariaLabel = anchor.getAttribute('aria-label') || card.getAttribute('aria-label') || '';
     const ariaMatch = ariaLabel.match(/View\s+(.+?)[’']s\s+profile/i) || ariaLabel.match(/Invite\s+(.+?)\s+to\s+connect/i);
@@ -216,7 +235,7 @@ function injectButtonOnCard(
     }
   }
 
-  // 3. Check anchor text content directly
+  // 4. Check anchor text content directly
   if (!fullName) {
     const textContent = anchor.textContent?.trim();
     if (textContent && textContent.length > 1) {
@@ -255,16 +274,16 @@ function injectButtonOnCard(
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #E06D53 0%, #D97757 100%);
+    background: linear-gradient(135deg, #FF3C6B 0%, #FF2458 100%);
     color: #ffffff;
-    border: 1.5px solid #FAF8F5;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
     font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(217, 119, 87, 0.4);
+    box-shadow: 0 2px 8px rgba(255, 60, 107, 0.4);
     z-index: 100;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     opacity: 0.95;
@@ -273,7 +292,7 @@ function injectButtonOnCard(
   btn.addEventListener('mouseenter', () => {
     btn.style.transform = 'scale(1.15)';
     btn.style.opacity = '1';
-    btn.style.boxShadow = '0 4px 14px rgba(217, 119, 87, 0.6)';
+    btn.style.boxShadow = '0 4px 14px rgba(255, 60, 107, 0.6)';
   });
 
   btn.addEventListener('mouseleave', () => {
@@ -304,20 +323,26 @@ export function processPeopleCards() {
   // Approach 1: Scan candidate profile links in the main content area
   const profileLinks = Array.from(
     document.querySelectorAll<HTMLAnchorElement>('main a[href*="/in/"], a[href*="/in/"]'),
-  ).filter((a) => !a.closest('header, nav, #global-nav, .global-nav, footer'));
+  ).filter((a) => {
+    if (a.closest('header, nav, #global-nav, .global-nav, footer')) return false;
+    const rawHref = a.getAttribute('href') || '';
+    const ariaLabel = a.getAttribute('aria-label') || '';
+    const textContent = a.textContent || '';
+    return (
+      rawHref.includes('/in/') &&
+      !rawHref.includes('/in/unavailable/') &&
+      !ariaLabel.toLowerCase().includes('connection') &&
+      !textContent.toLowerCase().includes('connection') &&
+      !textContent.toLowerCase().includes('other')
+    );
+  });
 
-  let injectedCount = 0;
   profileLinks.forEach((anchor) => {
     const rawHref = anchor.getAttribute('href') || '';
-    if (!rawHref.includes('/in/') || rawHref.includes('/in/unavailable/')) return;
-
     const card = findSingleCard(anchor);
-    if (!card) {
-      return;
-    }
+    if (!card) return;
 
     injectButtonOnCard(card, anchor, rawHref, companyNameHint);
-    injectedCount++;
   });
 
   // Approach 2: Scan Connect buttons in main content area
@@ -339,10 +364,21 @@ export function processPeopleCards() {
     const card = findSingleCard(btn);
     if (!card) return;
 
-    const inAnchor = card.querySelector<HTMLAnchorElement>('a[href*="/in/"]');
+    const inAnchors = Array.from(card.querySelectorAll<HTMLAnchorElement>('a[href*="/in/"]')).filter((a) => {
+      const rawHref = a.getAttribute('href') || '';
+      const ariaLabel = a.getAttribute('aria-label') || '';
+      const textContent = a.textContent || '';
+      return (
+        !rawHref.includes('/in/unavailable/') &&
+        !ariaLabel.toLowerCase().includes('connection') &&
+        !textContent.toLowerCase().includes('connection') &&
+        !textContent.toLowerCase().includes('other')
+      );
+    });
+
+    const inAnchor = inAnchors[0];
     if (!inAnchor) return;
     const rawHref = inAnchor.getAttribute('href') || '';
-    if (!rawHref.includes('/in/') || rawHref.includes('/in/unavailable/')) return;
 
     injectButtonOnCard(card, inAnchor, rawHref, companyNameHint);
   });

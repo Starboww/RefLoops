@@ -152,30 +152,30 @@ export function EmailFinderPage() {
 
       {/* Hero Presentation Header (Clean SaaS Look) */}
       <div className="text-center space-y-3 pt-2">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#FDF4F0] dark:bg-[#3A221C] border border-[#F7D5C8] dark:border-[#5A3228] text-xs font-extrabold uppercase tracking-wider text-[#D97757] dark:text-[#E06D53]">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[rgba(255,60,107,0.15)] border border-[rgba(255,60,107,0.30)] text-xs font-extrabold uppercase tracking-wider text-[#FF3C6B]">
           <Sparkles className="h-3.5 w-3.5" />
           <span>Email Finder &amp; Validator</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-black text-[#1C1917] dark:text-stone-100 tracking-tight">
+        <h1 className="heading-l tracking-tight text-white">
           Find work email addresses of anyone in seconds
         </h1>
 
-        <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 max-w-xl mx-auto leading-relaxed">
+        <p className="text-regular-sm text-[#C1C6CD] max-w-xl mx-auto leading-relaxed">
           Generate high-confidence candidate work emails from any name &amp; company domain, or verify addresses on trusted deliverability engines.
         </p>
       </div>
 
       {/* Primary Tabbed Card Container */}
-      <div className="bg-white dark:bg-[#1C1917] border border-[#E8E3DA] dark:border-stone-800 rounded-3xl shadow-sm overflow-hidden">
+      <div className="bg-[#1F2228] border border-white/10 rounded-3xl shadow-card overflow-hidden">
         {/* Navigation Tabs Bar */}
-        <div className="grid grid-cols-2 border-b border-[#E8E3DA] dark:border-stone-800 bg-[#FAF8F5]/60 dark:bg-stone-900/40">
+        <div className="grid grid-cols-2 border-b border-white/10 bg-[#181B20]">
           <button
             onClick={() => setActiveTab('finder')}
             className={`py-4 text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 border-b-2 ${
               activeTab === 'finder'
-                ? 'border-[#D97757] text-[#D97757] dark:text-[#E06D53] bg-white dark:bg-[#1C1917]'
-                : 'border-transparent text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200'
+                ? 'border-[#FF3C6B] text-[#FF3C6B] bg-[#1F2228]'
+                : 'border-transparent text-[#8A919D] hover:text-white'
             }`}
           >
             <Search className="h-4 w-4" />
@@ -186,8 +186,8 @@ export function EmailFinderPage() {
             onClick={() => setActiveTab('checker')}
             className={`py-4 text-xs sm:text-sm font-bold transition-all flex items-center justify-center space-x-2 border-b-2 ${
               activeTab === 'checker'
-                ? 'border-[#D97757] text-[#D97757] dark:text-[#E06D53] bg-white dark:bg-[#1C1917]'
-                : 'border-transparent text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200'
+                ? 'border-[#FF3C6B] text-[#FF3C6B] bg-[#1F2228]'
+                : 'border-transparent text-[#8A919D] hover:text-white'
             }`}
           >
             <ShieldCheck className="h-4 w-4" />
@@ -223,7 +223,7 @@ export function EmailFinderPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className="h-12 px-6 rounded-xl bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white font-bold text-sm shadow-md shadow-[#D97757]/20 flex items-center justify-center space-x-2 shrink-0"
+                  className="h-12 px-6 rounded-xl bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white font-bold text-sm shadow-md shadow-[#FF3C6B]/20 flex items-center justify-center space-x-2 shrink-0"
                 >
                   <Search className="h-4 w-4" />
                   <span>FIND EMAIL</span>
@@ -233,7 +233,7 @@ export function EmailFinderPage() {
               {/* Secondary Options Row */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 text-xs">
                 {/* Pre-fill with sample tester */}
-                <div className="flex items-center space-x-1.5 text-stone-500 dark:text-stone-400">
+                <div className="flex items-center space-x-1.5 text-[#8A919D]">
                   <span>Try sample:</span>
                   <button
                     type="button"
@@ -243,7 +243,7 @@ export function EmailFinderPage() {
                       const results = emailService.generateCandidates({ first: 'Satya', last: 'Nadella' }, 'microsoft.com');
                       setCandidates(results);
                     }}
-                    className="text-[#D97757] dark:text-[#E06D53] font-bold hover:underline"
+                    className="text-[#FF3C6B] font-bold hover:underline"
                   >
                     Satya Nadella @ microsoft.com
                   </button>
@@ -252,11 +252,11 @@ export function EmailFinderPage() {
                 {/* Target Job Picker */}
                 {activeJobs.length > 0 && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-stone-400 font-medium">Auto-add to Job:</span>
+                    <span className="text-[#8A919D] font-medium">Auto-add to Job:</span>
                     <select
                       value={selectedJobId}
                       onChange={(e) => setSelectedJobId(e.target.value)}
-                      className="h-8 rounded-lg border border-[#E8E3DA] dark:border-stone-700 bg-[#FAF8F5] dark:bg-stone-800 px-2 text-xs font-semibold text-stone-700 dark:text-stone-200 outline-none max-w-[200px] truncate"
+                      className="h-8 rounded-lg border border-white/10 bg-[#181B20] px-2 text-xs font-semibold text-white outline-none max-w-[200px] truncate"
                     >
                       <option value="">-- None (Generate Only) --</option>
                       {activeJobs.map((j) => (
@@ -274,13 +274,13 @@ export function EmailFinderPage() {
                 <button
                   type="button"
                   onClick={() => setShowAdvancedInference(!showAdvancedInference)}
-                  className="text-[11px] font-bold text-stone-500 hover:text-[#D97757] dark:hover:text-[#E06D53] transition-colors flex items-center gap-1"
+                  className="text-[11px] font-bold text-[#8A919D] hover:text-[#FF3C6B] transition-colors flex items-center gap-1"
                 >
                   <span>{showAdvancedInference ? '− Hide' : '+ Show'} Exact Corporate Pattern Inference (Gold Standard)</span>
                 </button>
 
                 {showAdvancedInference && (
-                  <div className="mt-2.5 p-3.5 rounded-xl bg-[#FAF8F5] dark:bg-stone-800/40 border border-[#E8E3DA] dark:border-stone-800 space-y-2">
+                  <div className="mt-2.5 p-3.5 rounded-xl bg-[#181B20] border border-white/10 space-y-2">
                     <FormField
                       label="Confirmed Real Employee Email Example (Optional)"
                       helpText="If you already know one real employee's email at this company, paste it to reverse-engineer and prioritize the exact pattern."
@@ -324,7 +324,7 @@ export function EmailFinderPage() {
                 <Button
                   onClick={() => handleOpenVerifier(selectedVerifier.url, emailToCheck)}
                   variant="primary"
-                  className="h-12 px-6 rounded-xl bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white font-bold text-xs sm:text-sm shadow-md shadow-[#D97757]/20 flex items-center justify-center space-x-2 shrink-0"
+                  className="h-12 px-6 rounded-xl bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white font-bold text-xs sm:text-sm shadow-md shadow-[#FF3C6B]/20 flex items-center justify-center space-x-2 shrink-0"
                 >
                   <Copy className="h-4 w-4" />
                   <span>Copy &amp; Open Checker ↗</span>
@@ -333,7 +333,7 @@ export function EmailFinderPage() {
 
               {/* Verifier Services Grid */}
               <div className="space-y-3 pt-2">
-                <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#C1C6CD] uppercase tracking-wider">
                   Select Verification Engine:
                 </label>
 
@@ -346,34 +346,34 @@ export function EmailFinderPage() {
                         onClick={() => setSelectedVerifierId(service.id)}
                         className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
                           isSelected
-                            ? 'border-[#D97757] bg-[#FDF4F0]/60 dark:bg-[#3A221C]/30 shadow-xs'
-                            : 'border-[#E8E3DA] dark:border-stone-800 bg-[#FAF8F5]/50 dark:bg-stone-900/50 hover:border-stone-300 dark:hover:border-stone-700'
+                            ? 'border-[#FF3C6B] bg-[rgba(255,60,107,0.15)] shadow-xs'
+                            : 'border-white/10 bg-[#181B20] hover:border-white/25'
                         }`}
                       >
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-[#1C1917] dark:text-stone-100">
+                            <span className="font-bold text-xs text-white">
                               {service.name}
                             </span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                               service.recommended
-                                ? 'bg-[#D97757] text-white'
-                                : 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
+                                ? 'bg-[#FF3C6B] text-white'
+                                : 'bg-white/10 text-[#C1C6CD]'
                             }`}>
                               {service.badge}
                             </span>
                           </div>
-                          <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-normal">
+                          <p className="text-[11px] text-[#8A919D] leading-normal">
                             {service.description}
                           </p>
                         </div>
 
-                        <div className="flex items-center justify-between pt-1 border-t border-[#E8E3DA]/80 dark:border-stone-800">
-                          <span className="text-[11px] font-semibold text-[#D97757] dark:text-[#E06D53] flex items-center gap-1">
+                        <div className="flex items-center justify-between pt-1 border-t border-white/10">
+                          <span className="text-[11px] font-semibold text-[#FF3C6B] flex items-center gap-1">
                             <span>Open Tool</span>
                             <ExternalLink className="h-3 w-3" />
                           </span>
-                          <span className="text-[10px] text-stone-400">External</span>
+                          <span className="text-[10px] text-[#8A919D]">External</span>
                         </div>
                       </div>
                     );
@@ -386,17 +386,17 @@ export function EmailFinderPage() {
                     onClick={() => setSelectedVerifierId('custom')}
                     className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                       selectedVerifierId === 'custom'
-                        ? 'border-[#D97757] bg-[#FDF4F0]/60 dark:bg-[#3A221C]/30'
-                        : 'border-[#E8E3DA] dark:border-stone-800 bg-[#FAF8F5]/50 dark:bg-stone-900/50'
+                        ? 'border-[#FF3C6B] bg-[rgba(255,60,107,0.15)]'
+                        : 'border-white/10 bg-[#181B20]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold text-[#1C1917] dark:text-stone-100 flex items-center gap-1.5">
-                        <Globe className="h-3.5 w-3.5 text-[#D97757]" />
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <Globe className="h-3.5 w-3.5 text-[#FF3C6B]" />
                         Use Custom Validator Tool URL
                       </span>
                       {selectedVerifierId === 'custom' && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D97757] text-white font-bold">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FF3C6B] text-white font-bold">
                           Active
                         </span>
                       )}
@@ -613,7 +613,7 @@ function CandidateRow({
             onClick={onAddToJob}
             variant="primary"
             size="sm"
-            className="text-xs font-bold space-x-1 rounded-lg h-8 px-3 bg-gradient-to-r from-[#E06D53] to-[#D97757] text-white"
+            className="text-xs font-bold space-x-1 rounded-lg h-8 px-3 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] text-white"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add to Job</span>

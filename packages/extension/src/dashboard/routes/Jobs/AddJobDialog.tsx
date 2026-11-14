@@ -55,7 +55,7 @@ export function AddJobDialog({
         </DialogHeader>
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4 py-2">
           {error && (
-            <div className="p-3 text-xs rounded-md bg-rose-50 border border-rose-200 text-rose-700 font-medium">
+            <div className="p-3 text-xs rounded-lg bg-[rgba(221,44,97,0.15)] border border-[rgba(221,44,97,0.30)] text-[#DD2C61] font-medium">
               {error}
             </div>
           )}
@@ -87,7 +87,7 @@ export function AddJobDialog({
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Source Type">
               <select
-                className="flex h-9 w-full rounded-md border border-stone-300 bg-white px-3 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-stone-700 dark:bg-stone-900"
+                className="flex h-10 w-full rounded-lg border border-white/12 bg-[#1F2228] px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF3C6B]"
                 value={sourceType}
                 onChange={(e) => setSourceType(e.target.value as 'EASY_APPLY' | 'COMPANY_SITE')}
               >

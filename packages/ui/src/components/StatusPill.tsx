@@ -25,50 +25,54 @@ interface StatusPillProps {
 export function StatusPill({ status, className }: StatusPillProps) {
   const getVariantAndLabel = (
     s: AllStatus
-  ): { variant: 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'outline'; label: string } => {
+  ): {
+    variant: 'default' | 'secondary' | 'success' | 'warning' | 'danger' | 'outline';
+    label: string;
+    dotColor?: string;
+  } => {
     switch (s) {
       case 'ACTIVE':
-        return { variant: 'default', label: 'Active' };
+        return { variant: 'default', label: 'Active', dotColor: '#52ACFE' };
       case 'ARCHIVED':
-        return { variant: 'secondary', label: 'Archived' };
+        return { variant: 'secondary', label: 'Archived', dotColor: '#8A919D' };
       case 'CLOSED':
-        return { variant: 'danger', label: 'Closed' };
+        return { variant: 'danger', label: 'Closed', dotColor: '#DD2C61' };
       case 'REFERRAL_RECEIVED':
-        return { variant: 'success', label: 'Referral Received 🎉' };
+        return { variant: 'success', label: 'Referral Received', dotColor: '#0BDFC5' };
 
       case 'PENDING':
-        return { variant: 'warning', label: 'Pending Accept' };
+        return { variant: 'warning', label: 'Pending Accept', dotColor: '#DFE686' };
       case 'ACCEPTED':
-        return { variant: 'success', label: 'Accepted' };
+        return { variant: 'success', label: 'Accepted', dotColor: '#0DC562' };
       case 'EXPIRED':
-        return { variant: 'danger', label: 'Expired' };
+        return { variant: 'danger', label: 'Expired', dotColor: '#DD2C61' };
       case 'DECLINED_OR_REMOVED':
-        return { variant: 'danger', label: 'Declined' };
+        return { variant: 'danger', label: 'Declined', dotColor: '#DD2C61' };
 
       case 'QUEUED':
-        return { variant: 'warning', label: 'Queued' };
+        return { variant: 'warning', label: 'Queued', dotColor: '#DFE686' };
       case 'READY_TO_SEND':
-        return { variant: 'success', label: 'Ready to Send 🚀' };
+        return { variant: 'success', label: 'Ready to Send', dotColor: '#0BDFC5' };
       case 'SENT':
-        return { variant: 'default', label: 'Sent' };
+        return { variant: 'default', label: 'Sent', dotColor: '#52ACFE' };
       case 'CANCELLED_BY_USER':
-        return { variant: 'secondary', label: 'Cancelled' };
+        return { variant: 'secondary', label: 'Cancelled', dotColor: '#5F646D' };
 
       case 'SCHEDULED':
-        return { variant: 'warning', label: 'Scheduled' };
+        return { variant: 'warning', label: 'Scheduled', dotColor: '#DFE686' };
       case 'SKIPPED':
-        return { variant: 'secondary', label: 'Skipped' };
+        return { variant: 'secondary', label: 'Skipped', dotColor: '#8A919D' };
       case 'NOT_SCHEDULED':
-        return { variant: 'outline', label: 'Not Scheduled' };
+        return { variant: 'outline', label: 'Not Scheduled', dotColor: '#5F646D' };
       default:
         return { variant: 'secondary', label: s };
     }
   };
 
-  const { variant, label } = getVariantAndLabel(status);
+  const { variant, label, dotColor } = getVariantAndLabel(status);
 
   return (
-    <Badge variant={variant} className={className}>
+    <Badge variant={variant} dotColor={dotColor} className={className}>
       {label}
     </Badge>
   );

@@ -383,39 +383,39 @@ export function SettingsPage() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2.5 min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xs px-2.5 py-0.5 rounded-md bg-[#F4F0EA] dark:bg-stone-800 font-bold text-[#1C1917] dark:text-stone-300 border border-[#E8E3DA] dark:border-stone-700 flex items-center gap-1.5">
-                <Sliders className="h-3.5 w-3.5 text-[#D97757]" />
+              <span className="text-xs px-2.5 py-0.5 rounded-md bg-[#292E35] font-bold text-white border border-white/10 flex items-center gap-1.5">
+                <Sliders className="h-3.5 w-3.5 text-[#FF3C6B]" />
                 Global Preferences
               </span>
 
-              <span className="text-xs px-2.5 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 font-semibold text-stone-600 dark:text-stone-400">
+              <span className="text-xs px-2.5 py-0.5 rounded-md bg-white/5 font-semibold text-[#C1C6CD]">
                 Cap: {form.dailySendCap} msgs/day
               </span>
 
               {settings.proModeEnabled && (
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 font-semibold flex items-center gap-1.5">
-                  <Zap className="h-3 w-3 text-amber-500 fill-amber-400" />
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-950/40 text-amber-300 border border-amber-500/30 font-semibold flex items-center gap-1.5">
+                  <Zap className="h-3 w-3 text-amber-400 fill-amber-400" />
                   Pro Mode Enabled
                 </span>
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1917] dark:text-stone-100 tracking-tight">
+            <h1 className="heading-md tracking-tight text-white">
               Settings &amp; Automation
             </h1>
 
-            <p className="text-xs sm:text-sm font-medium text-[#78716C] dark:text-stone-400">
+            <p className="text-xs sm:text-sm font-medium text-[#C1C6CD]">
               Configure outreach cadences, default message templates, daily safety caps, and Gmail sync.
             </p>
           </div>
 
           {/* Header Action */}
-          <div className="flex items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#E8E3DA] dark:border-stone-800/80">
+          <div className="flex items-center gap-3 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-white/10">
             <Button
               onClick={() => void handleSave()}
               isLoading={saving}
               variant="primary"
-              className="space-x-1.5 bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white shadow-md shadow-[#D97757]/20 text-xs font-bold px-5"
+              className="space-x-1.5 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white shadow-md shadow-[#FF3C6B]/20 text-xs font-bold px-5"
             >
               <Save className="h-4 w-4" />
               <span>Save Changes</span>
@@ -485,14 +485,14 @@ export function SettingsPage() {
       {activeTab === 'cadence' && (
         <div className="space-y-6 pt-2">
           {/* Delays & Expiry Card */}
-          <Card className="p-6 bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl shadow-xs space-y-5">
-            <div className="flex items-center space-x-3 border-b border-[#E8E3DA] dark:border-stone-800 pb-4">
-              <div className="h-9 w-9 rounded-xl bg-[#FDF4F0] dark:bg-[#3A221C] text-[#D97757] flex items-center justify-center font-bold">
+          <Card className="p-6 bg-[#1F2228] border-white/10 rounded-2xl shadow-card space-y-5">
+            <div className="flex items-center space-x-3 border-b border-white/10 pb-4">
+              <div className="h-9 w-9 rounded-xl bg-[rgba(255,60,107,0.15)] text-[#FF3C6B] flex items-center justify-center font-bold">
                 <Calendar className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#1C1917] dark:text-stone-100">Outreach Cadence &amp; Delays</h2>
-                <p className="text-xs text-stone-500 dark:text-stone-400">
+                <h2 className="text-base font-bold text-white">Outreach Cadence &amp; Delays</h2>
+                <p className="text-xs text-[#C1C6CD]">
                   Set default waiting times between initial outreach and automated follow-ups.
                 </p>
               </div>
@@ -641,20 +641,20 @@ export function SettingsPage() {
           <div className="lg:col-span-7 space-y-4">
 
             {/* 1. Custom & Profile Variables Card */}
-            <Card className="p-5 bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl shadow-xs space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-[#E8E3DA] dark:border-stone-800 pb-3">
+            <Card className="p-5 bg-[#1F2228] border-white/10 rounded-2xl shadow-card space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-white/10 pb-3">
                 <div className="flex items-center space-x-2">
-                  <Sparkles className="h-4 w-4 text-[#D97757]" />
-                  <h3 className="text-sm font-bold text-[#1C1917] dark:text-stone-100">
+                  <Sparkles className="h-4 w-4 text-[#FF3C6B]" />
+                  <h3 className="text-sm font-bold text-white">
                     Your Custom &amp; Sender Variables
                   </h3>
                 </div>
-                <span className="text-[11px] text-stone-400">Personalize templates with dynamic placeholders</span>
+                <span className="text-[11px] text-[#8A919D]">Personalize templates with dynamic placeholders</span>
               </div>
 
               {/* Suggestions Chips */}
               <div className="space-y-1.5">
-                <div className="text-[11px] font-bold text-stone-600 dark:text-stone-300">
+                <div className="text-[11px] font-bold text-[#C1C6CD]">
                   Quick suggestions (click to pre-fill):
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -680,7 +680,7 @@ export function SettingsPage() {
                         className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all flex items-center gap-1 border ${
                           isConfigured
                             ? 'bg-stone-100 dark:bg-stone-800/80 text-stone-400 dark:text-stone-500 border-stone-200 dark:border-stone-700'
-                            : 'bg-[#FDF4F0] dark:bg-[#3A221C] text-[#D97757] dark:text-[#E06D53] border-[#E8E3DA] dark:border-stone-700 hover:border-[#D97757]'
+                            : 'bg-[rgba(255,60,107,0.15)] text-[#FF3C6B] border-[rgba(255,60,107,0.30)] hover:border-[#FF3C6B]'
                         }`}
                         title={isConfigured ? `{{${sug.key}}} is configured` : `Click to add {{${sug.key}}}`}
                       >
@@ -693,12 +693,12 @@ export function SettingsPage() {
               </div>
 
               {/* Configured Variables List */}
-              <div className="space-y-2 pt-2 border-t border-stone-100 dark:border-stone-800/80">
+              <div className="space-y-2 pt-2 border-t border-white/10">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-stone-700 dark:text-stone-300">
+                  <span className="font-bold text-[#C1C6CD]">
                     Configured Variables
                   </span>
-                  <span className="text-[10px] text-stone-400">
+                  <span className="text-[10px] text-[#8A919D]">
                     {allConfiguredVars.length} {allConfiguredVars.length === 1 ? 'variable' : 'variables'} saved
                   </span>
                 </div>
@@ -708,10 +708,10 @@ export function SettingsPage() {
                     {allConfiguredVars.map(({ key, value }) => (
                       <div
                         key={key}
-                        className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 text-xs"
+                        className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#181B20] border border-white/10 text-xs"
                       >
                         <div className="min-w-0 flex-1">
-                          <div className="font-mono font-bold text-[#D97757] dark:text-[#E06D53] truncate">
+                          <div className="font-mono font-bold text-[#FF3C6B] truncate">
                             {"{{" + key + "}}"}
                           </div>
                           <div className="text-[11px] text-stone-600 dark:text-stone-300 truncate" title={value || '(empty)'}>
@@ -831,13 +831,13 @@ export function SettingsPage() {
               </div>
 
               {/* Dynamic Variables Quick Chips */}
-              <div className="bg-[#FAF8F5] dark:bg-stone-800/40 p-3 rounded-xl border border-[#E8E3DA] dark:border-stone-800 space-y-2.5">
+              <div className="bg-[#181B20] p-3 rounded-xl border border-white/10 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-[#D97757]" />
+                  <span className="font-bold text-white flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-[#FF3C6B]" />
                     Insert Template Variables
                   </span>
-                  <span className="text-[10px] text-stone-400">Click chip to copy / fill value</span>
+                  <span className="text-[10px] text-[#8A919D]">Click chip to copy / fill value</span>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
@@ -879,7 +879,7 @@ export function SettingsPage() {
                       }}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border transition-all flex items-center gap-1.5 ${
                         item.isFilled
-                          ? 'bg-white dark:bg-stone-900 border-[#E8E3DA] dark:border-stone-700 text-[#D97757] dark:text-[#E06D53] hover:border-[#D97757]'
+                          ? 'bg-[#292E35] border-white/10 text-[#FF3C6B] hover:border-[#FF3C6B]'
                           : 'bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 hover:border-amber-500'
                       }`}
                       title={item.isFilled ? `Source: ${item.source}` : `Click to fill missing value for ${item.label}`}
@@ -951,11 +951,11 @@ export function SettingsPage() {
                         className="cursor-pointer text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
                         title="Auto-prepended to outreach and follow-ups. Keep message bodies clean of greeting words like 'Hi Alex' so they are not sent twice."
                       >
-                        <Info className="h-3.5 w-3.5 text-[#D97757]" />
+                        <Info className="h-3.5 w-3.5 text-[#FF3C6B]" />
                       </div>
                     </div>
                     <p className="text-[11px] text-stone-400">
-                      Pre-pended before all messages automatically. Supports <code className="font-mono text-[#D97757]">{"{{firstName}}"}</code>.
+                      Pre-pended before all messages automatically. Supports <code className="font-mono text-[#FF3C6B]">{"{{firstName}}"}</code>.
                     </p>
                     <Input
                       value={form.greetingFormat}
@@ -1117,7 +1117,7 @@ export function SettingsPage() {
                   <span>Template Variable Resolution:</span>
                 </div>
                 <p className="text-[10px] text-stone-500 dark:text-stone-400 pl-5">
-                  <code className="font-mono text-[#D97757]">{"{{jobTitle}}"}</code> &rarr; "{sampleJob.jobTitle}", <code className="font-mono text-[#D97757]">{"{{companyName}}"}</code> &rarr; "{sampleJob.companyName}".
+                  <code className="font-mono text-[#FF3C6B]">{"{{jobTitle}}"}</code> &rarr; "{sampleJob.jobTitle}", <code className="font-mono text-[#FF3C6B]">{"{{companyName}}"}</code> &rarr; "{sampleJob.companyName}".
                 </p>
               </div>
             </Card>
@@ -1283,7 +1283,7 @@ export function SettingsPage() {
                         onClick={() => setShowOnboarding(true)}
                         variant="primary"
                         size="sm"
-                        className="text-xs h-9 bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white space-x-1.5 rounded-xl font-bold px-4"
+                        className="text-xs h-9 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white space-x-1.5 rounded-xl font-bold px-4"
                       >
                         <Mail className="h-3.5 w-3.5" />
                         <span>Connect Gmail</span>
@@ -1310,14 +1310,14 @@ export function SettingsPage() {
       {activeTab === 'data' && (
         <div className="space-y-6 pt-2">
           {/* Storage Stats Card */}
-          <Card className="p-6 bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl shadow-xs space-y-5">
-            <div className="flex items-center space-x-3 border-b border-[#E8E3DA] dark:border-stone-800 pb-4">
-              <div className="h-9 w-9 rounded-xl bg-[#FDF4F0] dark:bg-[#3A221C] text-[#D97757] flex items-center justify-center font-bold">
+          <Card className="p-6 bg-[#1F2228] border-white/10 rounded-2xl shadow-card space-y-5">
+            <div className="flex items-center space-x-3 border-b border-white/10 pb-4">
+              <div className="h-9 w-9 rounded-xl bg-[rgba(255,60,107,0.15)] text-[#FF3C6B] flex items-center justify-center font-bold">
                 <Database className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#1C1917] dark:text-stone-100">Local Storage &amp; Backup Management</h2>
-                <p className="text-xs text-stone-500 dark:text-stone-400">
+                <h2 className="text-base font-bold text-white">Local Storage &amp; Backup Management</h2>
+                <p className="text-xs text-[#C1C6CD]">
                   Export complete data archives or restore from previously exported JSON backups.
                 </p>
               </div>
@@ -1325,23 +1325,23 @@ export function SettingsPage() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl bg-[#FAF8F5] dark:bg-stone-800/50 border border-[#E8E3DA] dark:border-stone-800">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">Active Job Postings</p>
-                <p className="text-2xl font-extrabold text-[#1C1917] dark:text-stone-100 mt-1">
+              <div className="p-4 rounded-xl bg-[#181B20] border border-white/10">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#8A919D]">Active Job Postings</p>
+                <p className="text-2xl font-extrabold text-white mt-1">
                   {jobs.filter((j) => j.status === 'ACTIVE').length}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#FAF8F5] dark:bg-stone-800/50 border border-[#E8E3DA] dark:border-stone-800">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">Total Contacts Tracked</p>
-                <p className="text-2xl font-extrabold text-[#1C1917] dark:text-stone-100 mt-1">
+              <div className="p-4 rounded-xl bg-[#181B20] border border-white/10">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#8A919D]">Total Contacts Tracked</p>
+                <p className="text-2xl font-extrabold text-white mt-1">
                   {contacts.length}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#FAF8F5] dark:bg-stone-800/50 border border-[#E8E3DA] dark:border-stone-800">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">Storage Engine</p>
-                <p className="text-sm font-bold text-[#D97757] dark:text-[#E06D53] mt-2 font-mono">
+              <div className="p-4 rounded-xl bg-[#181B20] border border-white/10">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#8A919D]">Storage Engine</p>
+                <p className="text-sm font-bold text-[#FF3C6B] mt-2 font-mono">
                   chrome.storage.local
                 </p>
               </div>
@@ -1353,7 +1353,7 @@ export function SettingsPage() {
                 onClick={() => void handleExport()}
                 variant="primary"
                 disabled={exporting}
-                className="space-x-2 bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white text-xs font-bold rounded-xl h-10 px-5"
+                className="space-x-2 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white text-xs font-bold rounded-xl h-10 px-5"
               >
                 <Download className="h-4 w-4" />
                 <span>{exporting ? 'Exporting…' : 'Export Backup (.json)'}</span>

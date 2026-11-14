@@ -92,7 +92,7 @@ function buildWidget(initialJobId: string): void {
     all: unset;
     width: 40px;
     height: 92px;
-    background: linear-gradient(180deg, #E06D53 0%, #D97757 100%);
+    background: linear-gradient(180deg, #FF3C6B 0%, #FF2458 100%);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-right: none;
     border-radius: 12px 0 0 12px;
@@ -136,11 +136,11 @@ function buildWidget(initialJobId: string): void {
   `;
 
   tab.addEventListener('mouseenter', () => {
-    tab.style.background = 'linear-gradient(180deg, #C86545 0%, #BF6640 100%)';
+    tab.style.background = 'linear-gradient(180deg, #FF2458 0%, #E61E4D 100%)';
     tab.style.width = '44px';
   });
   tab.addEventListener('mouseleave', () => {
-    tab.style.background = 'linear-gradient(180deg, #E06D53 0%, #D97757 100%)';
+    tab.style.background = 'linear-gradient(180deg, #FF3C6B 0%, #FF2458 100%)';
     tab.style.width = '40px';
   });
   tab.addEventListener('click', (e) => {
@@ -156,8 +156,8 @@ function buildWidget(initialJobId: string): void {
   panel.id = PANEL_ID;
   panel.style.cssText = `
     width: 310px;
-    background: #18181B;
-    border: 1px solid #3F3F46;
+    background: #1F2228;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-right: none;
     border-radius: 16px 0 0 16px;
     box-shadow: -12px 0 36px rgba(0,0,0,0.5);
@@ -170,6 +170,7 @@ function buildWidget(initialJobId: string): void {
     overflow: hidden;
     position: relative;
     box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   `;
 
   panel.innerHTML = buildPanelHTML();
@@ -198,18 +199,18 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
         <div style="
           width:30px;height:30px;min-width:30px;
-          background:linear-gradient(135deg,#E06D53,#D97757);
+          background:linear-gradient(135deg,#FF3C6B,#FF2458);
           border-radius:8px;
           display:flex;align-items:center;justify-content:center;
           font-size:15px;line-height:1;
         ">⚡</div>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#F4F4F5;line-height:1.3;">RefLoop</div>
-          <div style="font-size:9px;font-weight:600;color:#D97757;letter-spacing:0.8px;line-height:1.3;">REFERRAL TRACKER</div>
+          <div style="font-size:13px;font-weight:700;color:#FFFFFF;line-height:1.3;">RefLoop</div>
+          <div style="font-size:9px;font-weight:600;color:#FF3C6B;letter-spacing:0.8px;line-height:1.3;">REFERRAL TRACKER</div>
         </div>
       </div>
-      <div style="height:1px;background:#3F3F46;margin-bottom:16px;"></div>
-      <div style="text-align:center;padding:24px 0;color:#71717A;font-size:12px;">
+      <div style="height:1px;background:rgba(255,255,255,0.1);margin-bottom:16px;"></div>
+      <div style="text-align:center;padding:24px 0;color:#C1C6CD;font-size:12px;">
         <div style="font-size:22px;margin-bottom:10px;animation:refloop-pulse 1.2s ease-in-out infinite;">⚡</div>
         Reading job details…
       </div>
@@ -221,31 +222,31 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
       <div style="display:flex;align-items:center;gap:10px;min-width:0;">
         <div style="
           width:30px;height:30px;min-width:30px;
-          background:linear-gradient(135deg,#E06D53,#D97757);
+          background:linear-gradient(135deg,#FF3C6B,#FF2458);
           border-radius:8px;
           display:flex;align-items:center;justify-content:center;
           font-size:15px;line-height:1;
         ">⚡</div>
         <div style="min-width:0;">
-          <div style="font-size:13px;font-weight:700;color:#F4F4F5;line-height:1.3;">RefLoop</div>
-          <div style="font-size:9px;font-weight:600;color:#D97757;letter-spacing:0.8px;line-height:1.3;">REFERRAL TRACKER</div>
+          <div style="font-size:13px;font-weight:700;color:#FFFFFF;line-height:1.3;">RefLoop</div>
+          <div style="font-size:9px;font-weight:600;color:#FF3C6B;letter-spacing:0.8px;line-height:1.3;">REFERRAL TRACKER</div>
         </div>
       </div>
       <button id="refloop-panel-close" style="
         all:unset;cursor:pointer;
         width:24px;height:24px;min-width:24px;
         display:flex;align-items:center;justify-content:center;
-        color:#71717A;font-size:14px;line-height:1;
+        color:#8A919D;font-size:14px;line-height:1;
         border-radius:6px;
         transition:background 0.15s, color 0.15s;
       " title="Close">✕</button>
     </div>
 
-    <div style="height:1px;background:#3F3F46;margin-bottom:16px;"></div>
+    <div style="height:1px;background:rgba(255,255,255,0.1);margin-bottom:16px;"></div>
 
     <div id="refloop-panel-form">
       <div style="margin-bottom:14px;">
-        <label style="display:block;font-size:10px;font-weight:700;color:#A1A1AA;margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;">Company</label>
+        <label style="display:block;font-size:10px;font-weight:700;color:#C1C6CD;margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;">Company</label>
         <input id="refloop-widget-company"
           type="text"
           value="${escapeHtml(company)}"
@@ -253,8 +254,8 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
           style="
             width:100%;box-sizing:border-box;
             padding:10px 12px;
-            background:#27272A;border:1px solid #3F3F46;
-            border-radius:10px;font-size:13px;color:#F4F4F5;
+            background:#181B20;border:1px solid rgba(255,255,255,0.12);
+            border-radius:10px;font-size:13px;color:#FFFFFF;
             font-family:inherit;outline:none;
             transition:border-color 0.15s;
           "
@@ -262,7 +263,7 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
       </div>
 
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:10px;font-weight:700;color:#A1A1AA;margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;">Job Title</label>
+        <label style="display:block;font-size:10px;font-weight:700;color:#C1C6CD;margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;">Job Title</label>
         <input id="refloop-widget-title"
           type="text"
           value="${escapeHtml(title)}"
@@ -270,8 +271,8 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
           style="
             width:100%;box-sizing:border-box;
             padding:10px 12px;
-            background:#27272A;border:1px solid #3F3F46;
-            border-radius:10px;font-size:13px;color:#F4F4F5;
+            background:#181B20;border:1px solid rgba(255,255,255,0.12);
+            border-radius:10px;font-size:13px;color:#FFFFFF;
             font-family:inherit;outline:none;
             transition:border-color 0.15s;
           "
@@ -285,10 +286,10 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
         display:flex;align-items:center;justify-content:center;gap:6px;
         width:100%;box-sizing:border-box;
         padding:11px 16px;
-        background:linear-gradient(135deg,#E06D53,#D97757);
+        background:linear-gradient(87deg, #FF3C6B 0.6%, #FF2458 96.59%);
         color:white;border-radius:10px;
         font-size:13px;font-weight:700;cursor:pointer;
-        box-shadow:0 4px 14px rgba(217,119,87,0.35);
+        box-shadow:0 4px 14px rgba(255,60,107,0.35);
         transition:opacity 0.15s,transform 0.1s;
         font-family:inherit;
         text-align:center;
@@ -299,7 +300,7 @@ function buildPanelHTML(details?: { jobTitle: string; companyName: string; jobLi
 
       <div id="refloop-widget-error" style="
         display:none;margin-top:10px;
-        font-size:11px;color:#F87171;text-align:center;
+        font-size:11px;color:#DD2C61;text-align:center;
       "></div>
     </div>
   `;
@@ -315,8 +316,8 @@ function buildSuccessHTML(company: string, title: string): string {
         all:unset;
         display:inline-flex;align-items:center;justify-content:center;gap:4px;
         padding:9px 18px;
-        background:#27272A;border:1px solid #3F3F46;
-        color:#F4F4F5;border-radius:10px;font-size:12px;font-weight:600;
+        background:#292E35;border:1px solid rgba(255,255,255,0.12);
+        color:#FFFFFF;border-radius:10px;font-size:12px;font-weight:600;
         cursor:pointer;font-family:inherit;
         transition:background 0.15s;
       ">Open Dashboard <span style="font-size:14px;">↗</span></button>
@@ -381,21 +382,21 @@ function wirePanelEvents(panel: HTMLElement): void {
   const closeBtn = panel.querySelector('#refloop-panel-close') as HTMLElement | null;
   closeBtn?.addEventListener('click', () => closePanel());
   closeBtn?.addEventListener('mouseenter', () => {
-    closeBtn.style.background = '#27272A';
-    closeBtn.style.color = '#F4F4F5';
+    closeBtn.style.background = '#292E35';
+    closeBtn.style.color = '#FFFFFF';
   });
   closeBtn?.addEventListener('mouseleave', () => {
     closeBtn.style.background = 'transparent';
-    closeBtn.style.color = '#71717A';
+    closeBtn.style.color = '#8A919D';
   });
 
   // Focus highlight for inputs
   panel.querySelectorAll('input[type="text"]').forEach((input) => {
     input.addEventListener('focus', () => {
-      (input as HTMLElement).style.borderColor = '#D97757';
+      (input as HTMLElement).style.borderColor = '#FF3C6B';
     });
     input.addEventListener('blur', () => {
-      (input as HTMLElement).style.borderColor = '#3F3F46';
+      (input as HTMLElement).style.borderColor = 'rgba(255, 255, 255, 0.12)';
     });
   });
 

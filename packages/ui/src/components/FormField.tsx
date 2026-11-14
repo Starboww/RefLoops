@@ -18,15 +18,15 @@ export function FormField({
 }) {
   return (
     <div className={cn('flex flex-col space-y-1.5', className)}>
-      <label className="text-sm font-medium text-stone-700 dark:text-stone-300">
+      <label className="text-xs font-medium text-[#C1C6CD] tracking-wide uppercase">
         {label}
-        {required && <span className="text-rose-500 ml-1">*</span>}
+        {required && <span className="text-[#DD2C61] ml-1">*</span>}
       </label>
       {children}
       {helpText && !error && (
-        <span className="text-xs text-stone-500 dark:text-stone-400">{helpText}</span>
+        <span className="text-xs text-[#8A919D]">{helpText}</span>
       )}
-      {error && <span className="text-xs font-medium text-rose-500">{error}</span>}
+      {error && <span className="text-xs font-medium text-[#DD2C61]">{error}</span>}
     </div>
   );
 }

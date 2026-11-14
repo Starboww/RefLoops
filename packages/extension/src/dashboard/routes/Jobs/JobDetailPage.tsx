@@ -301,7 +301,7 @@ export function JobDetailPage() {
       <div>
         <button
           onClick={() => navigate('/jobs')}
-          className="inline-flex items-center space-x-2 text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-[#D97757] dark:hover:text-[#E06D53] transition-colors py-1 mb-3 group"
+          className="inline-flex items-center space-x-2 text-xs font-bold text-[#8A919D] hover:text-[#FF3C6B] transition-colors py-1 mb-3 group"
         >
           <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
           <span>Back to Jobs</span>
@@ -345,7 +345,7 @@ export function JobDetailPage() {
                       href={job.jobLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-[#D97757] dark:text-[#E06D53] hover:underline font-semibold"
+                      className="inline-flex items-center gap-1 text-[#FF3C6B] hover:underline font-semibold"
                     >
                       <span>Job Posting Link</span>
                       <ExternalLink className="h-3 w-3" />
@@ -371,7 +371,7 @@ export function JobDetailPage() {
               <Button
                 onClick={() => setIsAddContactOpen(true)}
                 variant="primary"
-                className="space-x-1.5 bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white shadow-md shadow-[#D97757]/20 text-xs font-bold"
+                className="space-x-1.5 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white shadow-md shadow-[#FF3C6B]/20 text-xs font-bold"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add Contact</span>
@@ -449,21 +449,21 @@ export function JobDetailPage() {
       {activeTab === 'contacts' && (
         <div className="space-y-4 pt-2">
           {jobContacts.length === 0 ? (
-            <Card className="p-12 text-center bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl">
+            <Card className="p-12 text-center bg-[#1F2228] border-white/10 rounded-2xl">
               <div className="max-w-md mx-auto space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-[#FDF4F0] dark:bg-[#3A221C] text-[#D97757] dark:text-[#E06D53] flex items-center justify-center mx-auto text-xl font-bold shadow-xs">
+                <div className="h-12 w-12 rounded-2xl bg-[rgba(255,60,107,0.15)] text-[#FF3C6B] flex items-center justify-center mx-auto text-xl font-bold shadow-xs">
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#1C1917] dark:text-stone-100">No contacts added yet</h3>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                  <h3 className="text-base font-bold text-white">No contacts added yet</h3>
+                  <p className="text-xs text-[#C1C6CD] mt-1">
                     Add employees, recruiters, or hiring managers at {job.companyName} to begin tracking referral asks and automated follow-ups.
                   </p>
                 </div>
                 <Button
                   onClick={() => setIsAddContactOpen(true)}
                   variant="primary"
-                  className="space-x-2 bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white"
+                  className="space-x-2 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add First Contact</span>
@@ -499,13 +499,13 @@ export function JobDetailPage() {
                 return (
                   <Card
                     key={contact.id}
-                    className="p-5 bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-all rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-2xs"
+                    className="p-5 bg-[#1F2228] border-white/10 hover:border-white/20 transition-all rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-card"
                   >
                     {/* Left: Contact Info */}
                     <div className="flex items-start space-x-4 min-w-0">
                       {/* Avatar */}
                       <div className="relative shrink-0">
-                        <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#E06D53] to-[#D97757] text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                        <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#FF3C6B] to-[#FF2458] text-white font-bold flex items-center justify-center text-sm shadow-xs border border-white/20">
                           {contact.firstName[0]?.toUpperCase() || 'C'}
                         </div>
                         <div
@@ -525,21 +525,21 @@ export function JobDetailPage() {
                       {/* Name & Details */}
                       <div className="space-y-1.5 min-w-0">
                         <div className="flex items-center space-x-2.5">
-                          <h4 className="font-bold text-[#1C1917] dark:text-stone-100 text-base leading-tight">
+                          <h4 className="font-bold text-white text-base leading-tight">
                             {contact.firstName}
                           </h4>
-                          <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md bg-[#F4F0EA] dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-[#E8E3DA] dark:border-stone-700">
+                          <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-md bg-[#292E35] text-[#C1C6CD] border border-white/10">
                             {contact.channel}
                           </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-[#78716C] dark:text-stone-400">
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-[#8A919D]">
                           {contact.linkedinProfileUrl && (
                             <a
                               href={contact.linkedinProfileUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center space-x-1 text-[#D97757] dark:text-[#E06D53] hover:underline font-semibold"
+                              className="inline-flex items-center space-x-1 text-[#FF3C6B] hover:underline font-semibold"
                             >
                               <span>LinkedIn Profile</span>
                               <ExternalLink className="h-3 w-3" />
@@ -704,13 +704,13 @@ export function JobDetailPage() {
               </div>
 
               {/* Dynamic Variables Quick Chips */}
-              <div className="bg-[#FAF8F5] dark:bg-stone-800/40 p-3 rounded-xl border border-[#E8E3DA] dark:border-stone-800 space-y-2.5">
+              <div className="bg-[#1F2228] p-3 rounded-xl border border-white/10 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-[#D97757]" />
+                  <span className="font-bold text-white flex items-center gap-1.5">
+                    <Sparkles className="h-3.5 w-3.5 text-[#FF3C6B]" />
                     Insert Template Variables
                   </span>
-                  <span className="text-[10px] text-stone-400">Click chip to copy / fill value</span>
+                  <span className="text-[10px] text-[#8A919D]">Click chip to copy / fill value</span>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
@@ -752,7 +752,7 @@ export function JobDetailPage() {
                       }}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border transition-all flex items-center gap-1.5 ${
                         item.isFilled
-                          ? 'bg-white dark:bg-stone-900 border-[#E8E3DA] dark:border-stone-700 text-[#D97757] dark:text-[#E06D53] hover:border-[#D97757]'
+                          ? 'bg-[#292E35] border-white/10 text-[#FF3C6B] hover:border-[#FF3C6B]'
                           : 'bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 hover:border-amber-500'
                       }`}
                       title={item.isFilled ? `Source: ${item.source}` : `Click to fill missing value for ${item.label}`}
@@ -900,7 +900,7 @@ export function JobDetailPage() {
                   onClick={() => void handleSaveTemplates()}
                   isLoading={savingTemplates}
                   variant="primary"
-                  className="bg-gradient-to-r from-[#E06D53] to-[#D97757] hover:opacity-95 text-white shadow-md shadow-[#D97757]/20 font-bold text-xs"
+                  className="bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white shadow-md shadow-[#FF3C6B]/20 font-bold text-xs"
                 >
                   Save Templates
                 </Button>
@@ -910,20 +910,20 @@ export function JobDetailPage() {
 
           {/* Right Column: Live Message Preview Simulator (5 Cols) */}
           <div className="lg:col-span-5 space-y-4">
-            <Card className="p-6 bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl shadow-xs space-y-4 sticky top-6">
-              <div className="flex items-center justify-between border-b border-[#E8E3DA] dark:border-stone-800 pb-3.5">
+            <Card className="p-6 bg-[#1F2228] border-white/10 rounded-2xl shadow-card space-y-4 sticky top-6">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
                 <div className="flex items-center space-x-2">
-                  <div className="h-7 w-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <div className="h-7 w-7 rounded-lg bg-[rgba(66,80,204,0.15)] text-[#52ACFE] flex items-center justify-center">
                     <Eye className="h-4 w-4" />
                   </div>
-                  <h3 className="text-sm font-bold text-[#1C1917] dark:text-stone-100">Live Preview Simulator</h3>
+                  <h3 className="text-sm font-bold text-white">Live Preview Simulator</h3>
                 </div>
 
                 {/* Stage Selector */}
                 <select
                   value={previewStage}
                   onChange={(e) => setPreviewStage(e.target.value as Stage)}
-                  className="h-8 rounded-lg border border-[#E8E3DA] dark:border-stone-700 bg-[#FAF8F5] dark:bg-stone-800 px-2 text-xs font-bold text-stone-700 dark:text-stone-200 outline-none"
+                  className="h-8 rounded-lg border border-white/10 bg-[#181B20] px-2 text-xs font-bold text-white outline-none"
                 >
                   <option value="OUTREACH">Outreach</option>
                   <option value="FU1">Follow-Up 1</option>
@@ -933,7 +933,7 @@ export function JobDetailPage() {
 
               {/* Select Target Preview Contact */}
               {jobContacts.length > 0 && (
-                <div className="flex items-center justify-between text-xs bg-[#FAF8F5] dark:bg-stone-800/40 p-2.5 rounded-xl border border-[#E8E3DA] dark:border-stone-800">
+                <div className="flex items-center justify-between text-xs bg-[#181B20] p-2.5 rounded-xl border border-white/10">
                   <span className="text-stone-500 font-medium">Simulate Contact:</span>
                   <select
                     value={previewContactId}
@@ -1042,10 +1042,10 @@ export function JobDetailPage() {
 
       {/* Add Contact Modal */}
       <Dialog open={isAddContactOpen} onOpenChange={setIsAddContactOpen}>
-        <DialogContent className="sm:max-w-md bg-white dark:bg-[#1C1917] border-[#E8E3DA] dark:border-stone-800 rounded-2xl">
+        <DialogContent className="sm:max-w-md bg-[#1F2228] border-white/12 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold text-[#1C1917] dark:text-stone-100 flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-[#FDF4F0] dark:bg-[#3A221C] text-[#D97757] flex items-center justify-center font-bold text-sm">
+            <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-[rgba(255,60,107,0.15)] text-[#FF3C6B] flex items-center justify-center font-bold text-sm">
                 <Plus className="h-4 w-4" />
               </div>
               <span>Add Contact at {job.companyName}</span>
@@ -1130,7 +1130,7 @@ export function JobDetailPage() {
                 type="submit"
                 variant="primary"
                 isLoading={addingContact}
-                className="rounded-xl bg-gradient-to-r from-[#E06D53] to-[#D97757] text-white font-bold"
+                className="rounded-xl bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] text-white font-bold"
               >
                 Add Contact
               </Button>

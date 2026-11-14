@@ -3,20 +3,25 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D97757] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
+  'inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3C6B] disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]',
   {
     variants: {
       variant: {
-        primary: 'bg-[#D97757] text-white hover:bg-[#C86545] shadow-sm font-semibold',
-        secondary: 'bg-[#F4F0EA] text-[#1C1917] hover:bg-[#E8E3DA] dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 font-medium',
-        outline: 'border border-[#E8E3DA] bg-white hover:bg-[#FAF8F5] dark:border-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 text-[#1C1917] dark:text-stone-200 shadow-xs',
-        ghost: 'bg-transparent hover:bg-[#F4F0EA] dark:hover:bg-stone-800 text-[#78716C] dark:text-stone-300 hover:text-[#1C1917] dark:hover:text-stone-100',
-        danger: 'bg-rose-600 text-white hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-700 shadow-sm font-medium',
+        primary:
+          'bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] text-white hover:opacity-95 shadow-md font-semibold border border-white/20 active:scale-[0.98]',
+        secondary:
+          'bg-[#1F2228] text-white hover:bg-[#292E35] border border-white/12 shadow-insetGlow font-medium active:scale-[0.98]',
+        outline:
+          'border border-white/15 bg-transparent hover:bg-white/5 text-[#DFE4FC] hover:text-white shadow-xs font-medium',
+        ghost:
+          'bg-transparent hover:bg-white/5 text-[#C1C6CD] hover:text-white font-medium',
+        danger:
+          'bg-[#DD2C61] text-white hover:bg-[#DD2C61]/90 shadow-sm font-medium',
       },
       size: {
         sm: 'h-8 px-3 text-xs rounded-lg',
         md: 'h-9 px-4 text-sm rounded-xl',
-        lg: 'h-11 px-5 text-base rounded-xl',
+        lg: 'h-11 px-5 text-base rounded-xl font-semibold',
         icon: 'h-9 w-9 p-0 rounded-xl',
       },
     },

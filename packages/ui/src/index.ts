@@ -5,6 +5,7 @@ export { Badge, type BadgeProps } from './components/Badge';
 export { StatusPill, type AllStatus } from './components/StatusPill';
 export {
   Card,
+  CardWrapper,
   CardHeader,
   CardTitle,
   CardDescription,

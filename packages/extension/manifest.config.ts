@@ -161,7 +161,7 @@ export default defineManifest({
   // ---------------------------------------------------------------------------
   web_accessible_resources: [
     {
-      resources: ['icons/*', 'assets/*'],
+      resources: ['icons/*', 'assets/*', 'fonts/*'],
       matches: [
         '*://*.linkedin.com/*',
         '*://boards.greenhouse.io/*',

@@ -148,7 +148,7 @@ export function cleanScrapedName(rawName: string): string {
 }
 
 /**
- * Checks if a string looks like a valid person's name (not a section header).
+ * Checks if a string looks like a valid person's name (not a section header or connection snippet).
  */
 export function isValidPersonName(name: string): boolean {
   if (!name || name.length < 2) return false;
@@ -161,7 +161,18 @@ export function isValidPersonName(name: string): boolean {
     lower.startsWith('pages people') ||
     lower.startsWith('similar pages') ||
     lower.startsWith('view profile') ||
-    lower.startsWith('show all')
+    lower.startsWith('show all') ||
+    lower.includes('connection') ||
+    lower.includes('connections') ||
+    lower.includes('mutual') ||
+    lower.includes('follow') ||
+    lower.includes('follower') ||
+    lower.includes('other') ||
+    /&\s*\d+/.test(lower) ||
+    /\band\s+\d+/i.test(lower) ||
+    /\b\d+\s+other/i.test(lower) ||
+    /\bwork\s+here\b/i.test(lower) ||
+    /\bfollow\s+this\b/i.test(lower)
   ) {
     return false;
   }

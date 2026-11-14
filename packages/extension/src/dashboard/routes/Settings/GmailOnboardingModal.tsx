@@ -262,7 +262,7 @@ export function GmailOnboardingModal({ onSuccess, onCancel }: GmailOnboardingMod
               onClick={() => void handleNext()}
               variant="primary"
               size="sm"
-              className="flex items-center space-x-1.5 bg-[#D97757] hover:bg-[#C86545] text-white"
+              className="flex items-center space-x-1.5 bg-gradient-to-r from-[#FF3C6B] to-[#FF2458] hover:opacity-95 text-white"
             >
               <span>I understand — Next</span>
               <ChevronRight className="h-3.5 w-3.5" />

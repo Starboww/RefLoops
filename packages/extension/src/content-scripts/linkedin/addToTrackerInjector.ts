@@ -56,14 +56,14 @@ function injectButton(): boolean {
   button.style.cssText = `
     margin-left: 12px;
     padding: 6px 14px;
-    background-color: #D97757;
+    background: linear-gradient(87deg, #FF3C6B 0.6%, #FF2458 96.59%);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(217,119,87,0.3);
+    box-shadow: 0 2px 8px rgba(255,60,107,0.3);
     z-index: 9999;
     vertical-align: middle;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -94,7 +94,7 @@ function injectButton(): boolean {
     }
 
     button.innerHTML = '✓ Added to RefLoop!';
-    button.style.backgroundColor = '#059669';
+    button.style.background = '#0DC562';
 
     if (!chrome.runtime?.id) {
       console.warn('[RefLoop] Extension context invalidated. Please refresh the page.');
@@ -133,12 +133,13 @@ function showSuccessToast(company: string, title: string) {
     bottom: 24px;
     right: 24px;
     padding: 14px 20px;
-    background-color: #1C1917;
+    background-color: #1F2228;
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
     font-size: 13px;
     font-weight: 500;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     z-index: 999999;
     display: flex;
     align-items: center;
@@ -148,10 +149,10 @@ function showSuccessToast(company: string, title: string) {
 
   toast.innerHTML = `
     <div>
-      <div style="font-weight: 700; color: #10B981;">✓ Job Added to RefLoop!</div>
-      <div style="font-size: 11px; color: #A8A29E;">${title} at ${company}</div>
+      <div style="font-weight: 700; color: #0BDFC5;">✓ Job Added to RefLoop!</div>
+      <div style="font-size: 11px; color: #C1C6CD;">${title} at ${company}</div>
     </div>
-    <button id="refloop-toast-dash-btn" style="padding: 6px 12px; background: #D97757; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">Open Dashboard ↗</button>
+    <button id="refloop-toast-dash-btn" style="padding: 6px 12px; background: linear-gradient(87deg, #FF3C6B 0.6%, #FF2458 96.59%); color: white; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">Open Dashboard ↗</button>
   `;
 
   document.body.appendChild(toast);
